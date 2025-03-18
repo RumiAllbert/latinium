@@ -50,6 +50,9 @@ function generateMockAnalysis(text: string) {
 export default function TextInputArea() {
   const [text, setText] = useState(CAESAR_TEXT);
   const [analyzing, setAnalyzing] = useState(false);
+  const [charCount, setCharCount] = useState(CAESAR_TEXT.length);
+
+  const CHAR_LIMIT = 500;
 
   // Initialize text on mount
   useEffect(() => {
@@ -57,16 +60,57 @@ export default function TextInputArea() {
       "TextInputArea mounted with initial text:",
       text.substring(0, 30) + "..."
     );
+    setCharCount(text.length);
   }, []);
+
+  // Listen for analysis requests from other components
+  useEffect(() => {
+    const handleAnalysisRequest = (event: CustomEvent) => {
+      if (event.detail && event.detail.text) {
+        setText(event.detail.text);
+        // Wait a tick for the state to update
+        setTimeout(() => {
+          handleAnalysis();
+        }, 0);
+      }
+    };
+
+    window.addEventListener(
+      "latin-request-analysis",
+      handleAnalysisRequest as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "latin-request-analysis",
+        handleAnalysisRequest as EventListener
+      );
+    };
+  }, []); // Note: This effect depends on handleAnalysis, but including it would cause unnecessary rerenders
 
   // Text handling functions
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    if (newText.length <= CHAR_LIMIT) {
+      setText(newText);
+      setCharCount(newText.length);
+    }
   };
 
   const setExampleText = (exampleText: string) => {
-    console.log("Setting example text:", exampleText.substring(0, 30) + "...");
-    setText(exampleText);
+    if (exampleText.length <= CHAR_LIMIT) {
+      console.log(
+        "Setting example text:",
+        exampleText.substring(0, 30) + "..."
+      );
+      setText(exampleText);
+      setCharCount(exampleText.length);
+    } else {
+      const truncatedText = exampleText.substring(0, CHAR_LIMIT);
+      setText(truncatedText);
+      setCharCount(truncatedText.length);
+      console.warn("Example text truncated to match character limit");
+    }
   };
 
   // Analysis handling functions
@@ -82,6 +126,13 @@ export default function TextInputArea() {
     }
 
     updateLoadingState(true);
+
+    // Make analysis section visible and scroll to it
+    const analysisSection = document.getElementById("analysis-section");
+    if (analysisSection) {
+      analysisSection.classList.remove("analysis-section-hidden");
+      analysisSection.classList.add("analysis-section-visible");
+    }
 
     try {
       // Call the API
@@ -156,16 +207,42 @@ export default function TextInputArea() {
     }
   };
 
+  // Helper function to get character count class
+  const getCharCountClass = () => {
+    if (charCount > CHAR_LIMIT * 0.9) return "char-counter-error";
+    if (charCount > CHAR_LIMIT * 0.75) return "char-counter-warning";
+    return "char-counter-normal";
+  };
+
+  // Helper function to get textarea class based on character count
+  const getTextareaClass = () => {
+    const baseClass =
+      "glass-input w-full h-64 font-serif leading-relaxed resize-none mb-1";
+    if (charCount > CHAR_LIMIT * 0.9) return `${baseClass} textarea-error`;
+    if (charCount > CHAR_LIMIT * 0.75) return `${baseClass} textarea-warning`;
+    return baseClass;
+  };
+
   // Render the UI
   return (
     <div className="flex flex-col h-full">
-      <textarea
-        id="latin-input"
-        className="glass-input w-full h-64 font-serif leading-relaxed resize-none mb-4"
-        placeholder="Enter Latin text here... (e.g. 'Gallia est omnis divisa in partes tres...')"
-        value={text}
-        onChange={handleTextChange}
-      />
+      <div className="relative">
+        <textarea
+          id="latin-input"
+          className={getTextareaClass()}
+          placeholder="Enter Latin text here... (e.g. 'Gallia est omnis divisa in partes tres...')"
+          value={text}
+          onChange={handleTextChange}
+          maxLength={CHAR_LIMIT}
+        />
+        {/* Character counter */}
+        <div className={`char-counter ${getCharCountClass()}`}>
+          {charCount}/{CHAR_LIMIT} characters
+          {charCount > CHAR_LIMIT * 0.9 && (
+            <span className="ml-2">Character limit almost reached</span>
+          )}
+        </div>
+      </div>
 
       <div className="flex justify-between items-center">
         <div className="text-white/60 text-sm">
@@ -175,14 +252,14 @@ export default function TextInputArea() {
         <div className="flex gap-2">
           <button
             id="analyze-btn"
-            className="glass-button bg-primary-600 hover:bg-primary-700 flex items-center gap-2 px-4 py-2"
+            className="glass-button bg-primary-600 hover:bg-primary-700 flex items-center gap-2 px-6 py-2 text-base"
             type="button"
             onClick={handleAnalysis}
-            disabled={analyzing}
+            disabled={analyzing || charCount === 0}
           >
             {analyzing ? (
               <svg
-                className="animate-spin h-4 w-4"
+                className="animate-spin h-5 w-5"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -204,7 +281,7 @@ export default function TextInputArea() {
             ) : (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -217,7 +294,23 @@ export default function TextInputArea() {
                 />
               </svg>
             )}
-            <span>{analyzing ? "Analyzing..." : "Analyze Text"}</span>
+            <span className="font-medium">
+              {analyzing ? "Analyzing..." : "Analyze Text"}
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-1 animate-bounce-subtle"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
           </button>
         </div>
       </div>
