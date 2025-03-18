@@ -8,78 +8,54 @@ import TextInputArea from "./TextInputArea";
   console.log("TextAnalysisPanel script running");
   document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM content loaded in TextAnalysisPanel");
+
+    // Initially hide the analysis section
+    const analysisSection = document.getElementById("analysis-section");
+    if (analysisSection) {
+      analysisSection.classList.add("analysis-section-hidden");
+    }
+
+    // Add scroll functionality when analysis is triggered
+    window.addEventListener("latin-text-analyzed", () => {
+      // Wait for a moment for the results to render
+      setTimeout(() => {
+        const analysisSection = document.getElementById("analysis-section");
+        if (analysisSection) {
+          // Ensure it's visible
+          analysisSection.classList.remove("analysis-section-hidden");
+          analysisSection.classList.add("analysis-section-visible");
+          // Scroll to the analysis section with smooth animation
+          analysisSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 500);
+    });
   });
 </script>
 
-<div class="glass-panel overflow-hidden">
-  <div class="flex flex-col lg:flex-row">
-    <!-- Left Panel: Text Input -->
-    <div class="flex-1 p-6 border-b lg:border-r lg:border-b-0 border-white/10">
+<div class="flex flex-col max-w-5xl mx-auto space-y-8 animate-fade-in">
+  <!-- Input Section -->
+  <div class="glass-panel overflow-hidden">
+    <div class="p-6">
       <h2 class="text-2xl font-serif font-medium mb-4">Latin Text</h2>
       <p class="text-white/70 mb-6 text-sm">
         Enter or paste a Latin text passage below to analyze its grammatical
-        structure and relationships.
+        structure and relationships. Limited to 500 characters for optimal
+        performance.
       </p>
       <TextInputArea client:load />
     </div>
+  </div>
 
-    <!-- Right Panel: Analysis Results -->
-    <div class="flex-1 p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-serif font-medium">Analysis</h2>
-        <div class="flex gap-2">
-          <button class="glass-button text-sm py-1 px-3">
-            <span class="flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                ></path>
-              </svg>
-              Export
-            </span>
-          </button>
-          <button class="glass-button text-sm py-1 px-3">
-            <span class="flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                ></path>
-              </svg>
-              Refresh
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div class="mb-4 flex gap-2">
-        <div class="flex items-center">
-          <span class="text-white/70 text-sm mr-3">View:</span>
-          <button class="glass-button text-sm py-1 px-3 bg-white/30">
-            Annotated
-          </button>
-          <button class="glass-button text-sm py-1 px-3">Relationships</button>
-          <button class="glass-button text-sm py-1 px-3">Syntax Tree</button>
-        </div>
-      </div>
-
+  <!-- Analysis Section (initially hidden) -->
+  <div id="analysis-section" class="glass-panel overflow-hidden">
+    <div class="p-6">
+      <h2 class="text-2xl font-serif font-medium mb-4">Analysis</h2>
+      <p class="text-white/70 mb-6 text-sm">
+        Grammatical breakdown and relationships between words
+      </p>
       <TextAnalysisResult client:load />
     </div>
   </div>
@@ -122,5 +98,20 @@ import TextInputArea from "./TextInputArea";
     border-color: rgba(100, 130, 200, 0.5);
     outline: none;
     box-shadow: 0 0 0 2px rgba(100, 130, 200, 0.2);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  :global(.animate-fade-in) {
+    animation: fadeIn 0.6s ease-out forwards;
   }
 </style>
