@@ -145,4 +145,270 @@
   100% {
     border-color: rgba(100, 120, 240, 0.4);
   }
+}
+
+/* Relationship visualization styles */
+.relationship-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 1.5s ease-in-out forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Improved relationship visualization for Latin analysis */
+.relationship-group path {
+  transition: all 0.2s ease;
+}
+
+.relationship-group:hover path {
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+  stroke-width: 3px;
+}
+
+/* Better text readability on relationship paths */
+.relationship-text tspan {
+  background: rgba(20, 30, 50, 0.8);
+  padding: 2px 5px;
+  border-radius: 3px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+/* Add additional style for text labels */
+tspan.relation-label {
+  background-color: rgba(30, 41, 59, 0.85);
+  padding: 3px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Specific styles for different relationship types */
+tspan.verb-subject {
+  color: #d8b4fe; /* Purple-ish */
+  border-bottom: 1px solid #d8b4fe;
+}
+
+tspan.verb-object {
+  color: #93c5fd; /* Blue-ish */
+  border-bottom: 1px solid #93c5fd;
+}
+
+tspan.adjective-noun {
+  color: #fcd34d; /* Yellow-ish */
+  border-bottom: 1px solid #fcd34d;
+}
+
+tspan.adverb-verb {
+  color: #a3e635; /* Green-ish */
+  border-bottom: 1px solid #a3e635;
+}
+
+/* Pulsing animation for selected relationships */
+@keyframes pulse-relationship {
+  0%, 100% {
+    stroke-width: 2px;
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3));
+  }
+  50% {
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+  }
+}
+
+.relationship-selected {
+  animation: pulse-relationship 2s ease-in-out infinite;
+}
+
+/* Highlighting for word boxes */
+.word-box {
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.word-box:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.word-box.selected {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Syntax tree styles */
+.tree-node {
+  transition: all 0.3s ease;
+}
+
+.tree-node:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.tree-connector {
+  stroke-dasharray: 10;
+  animation: flow 30s linear infinite;
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+/* Improved button styles */
+.glass-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.glass-button:hover::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Slide-in animation for analysis section */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.8s ease-out forwards;
+}
+
+/* Section appearance transitions */
+.analysis-section-hidden {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.8s ease, opacity 0.5s ease;
+}
+
+.analysis-section-visible {
+  max-height: 2000px; /* Arbitrary large height */
+  opacity: 1;
+  transition: max-height 0.8s ease, opacity 0.5s ease 0.3s;
+}
+
+/* Subtle bounce animation for the down arrow */
+@keyframes bounceSlight {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounceSlight 2s ease-in-out infinite;
+}
+
+/* Attention animation for the results header */
+@keyframes attention {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  10% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-attention {
+  animation: attention 1.5s ease-out forwards;
+}
+
+/* Character counter styling */
+.char-counter {
+  transition: color 0.3s ease;
+  font-size: 0.75rem;
+  text-align: right;
+  margin-bottom: 0.5rem;
+}
+
+.char-counter-normal {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.char-counter-warning {
+  color: rgba(251, 191, 36, 1); /* amber-400 */
+}
+
+.char-counter-error {
+  color: rgba(248, 113, 113, 1); /* red-400 */
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Input with warning/error states */
+.textarea-warning {
+  border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+.textarea-error {
+  border-color: rgba(248, 113, 113, 0.7) !important;
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.3);
 } 
