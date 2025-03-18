@@ -1,0 +1,126 @@
+---
+import TextAnalysisResult from "./TextAnalysisResult";
+import TextInputArea from "./TextInputArea";
+---
+
+<script>
+  // Ensure that React components are correctly loaded and hydrated
+  console.log("TextAnalysisPanel script running");
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM content loaded in TextAnalysisPanel");
+  });
+</script>
+
+<div class="glass-panel overflow-hidden">
+  <div class="flex flex-col lg:flex-row">
+    <!-- Left Panel: Text Input -->
+    <div class="flex-1 p-6 border-b lg:border-r lg:border-b-0 border-white/10">
+      <h2 class="text-2xl font-serif font-medium mb-4">Latin Text</h2>
+      <p class="text-white/70 mb-6 text-sm">
+        Enter or paste a Latin text passage below to analyze its grammatical
+        structure and relationships.
+      </p>
+      <TextInputArea client:load />
+    </div>
+
+    <!-- Right Panel: Analysis Results -->
+    <div class="flex-1 p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-serif font-medium">Analysis</h2>
+        <div class="flex gap-2">
+          <button class="glass-button text-sm py-1 px-3">
+            <span class="flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                ></path>
+              </svg>
+              Export
+            </span>
+          </button>
+          <button class="glass-button text-sm py-1 px-3">
+            <span class="flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                ></path>
+              </svg>
+              Refresh
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-4 flex gap-2">
+        <div class="flex items-center">
+          <span class="text-white/70 text-sm mr-3">View:</span>
+          <button class="glass-button text-sm py-1 px-3 bg-white/30">
+            Annotated
+          </button>
+          <button class="glass-button text-sm py-1 px-3">Relationships</button>
+          <button class="glass-button text-sm py-1 px-3">Syntax Tree</button>
+        </div>
+      </div>
+
+      <TextAnalysisResult client:load />
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Enhanced glass effect styling */
+  :global(.glass-panel) {
+    background: rgba(20, 25, 40, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.glass-button) {
+    background: rgba(30, 40, 60, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  :global(.glass-button:hover) {
+    background: rgba(50, 60, 80, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.glass-input) {
+    background: rgba(20, 30, 50, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    transition: all 0.2s ease;
+  }
+
+  :global(.glass-input:focus) {
+    background: rgba(30, 40, 60, 0.4);
+    border-color: rgba(100, 130, 200, 0.5);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 130, 200, 0.2);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import FeatureHighlights from "../components/FeatureHighlights.astro";
+import TextAnalysisPanel from "../components/TextAnalysisPanel.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout>
+  <section class="py-12 animate-fade-in">
+    <div class="text-center mb-16">
+      <h1
+        class="text-5xl font-serif font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-300 to-secondary-300"
+      >
+        Latinium
+      </h1>
+      <p class="text-xl text-white/80 max-w-2xl mx-auto">
+        Interactive Latin text analysis through intuitive visualization and
+        annotation. Powered by Google's Gemini AI.
+      </p>
+    </div>
+
+    <div class="max-w-5xl mx-auto">
+      <TextAnalysisPanel />
+    </div>
+  </section>
+
+  <section class="py-16">
+    <FeatureHighlights />
+  </section>
+
+  <section class="py-12 glass-panel p-8 max-w-4xl mx-auto">
+    <h2 class="text-3xl font-serif font-bold mb-6 text-center">
+      Get Started with an Example
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <button class="glass-button h-full flex flex-col p-6 text-left">
+        <h3 class="text-xl font-medium mb-2">Caesar's Gallic Wars</h3>
+        <p class="text-white/70 text-sm flex-grow">
+          "Gallia est omnis divisa in partes tres, quarum unam incolunt
+          Belgae..."
+        </p>
+        <span class="text-primary-300 mt-4 text-sm">Load example →</span>
+      </button>
+
+      <button class="glass-button h-full flex flex-col p-6 text-left">
+        <h3 class="text-xl font-medium mb-2">Cicero's Orations</h3>
+        <p class="text-white/70 text-sm flex-grow">
+          "Quousque tandem abutere, Catilina, patientia nostra? Quam diu etiam
+          furor iste tuus nos eludet?"
+        </p>
+        <span class="text-primary-300 mt-4 text-sm">Load example →</span>
+      </button>
+    </div>
+  </section>
+</MainLayout>
+

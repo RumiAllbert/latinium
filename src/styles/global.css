@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-base antialiased;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg;
+  }
+  
+  .glass-button {
+    @apply px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg 
+           border border-white/20 transition duration-300 shadow-sm;
+  }
+  
+  .glass-input {
+    @apply bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent 
+           placeholder:text-white/40 text-white;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Highlighting styles for Latin text analysis */
+.highlight-noun {
+  @apply text-primary-300 relative;
+}
+
+.highlight-verb {
+  @apply text-secondary-300 relative;
+}
+
+.highlight-adjective {
+  @apply text-amber-300 relative;
+}
+
+.highlight-adverb {
+  @apply text-lime-300 relative;
+}
+
+.highlight-preposition {
+  @apply text-rose-300 relative;
+}
+
+.highlight-conjunction {
+  @apply text-cyan-300 relative;
+}
+
+.highlight-pronoun {
+  @apply text-orange-300 relative;
+}
+
+/* Relationship arrows and effects */
+.relationship-arrow {
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+.word:hover .relationship-arrow,
+.word:focus .relationship-arrow {
+  @apply opacity-100;
+}
+
+/* Enhanced word hover effects */
+.word {
+  @apply transition-all duration-200 ease-in-out;
+  position: relative;
+}
+
+/* Tooltip for word meanings on hover */
+.word::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.word::after {
+  content: attr(data-meaning);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(20, 20, 30, 0.95);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.word:hover::before,
+.word:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Related words highlighting */
+.related-word {
+  @apply border-b-2 border-primary-300;
+  animation: pulseBorder 1.5s infinite;
+}
+
+@keyframes pulseBorder {
+  0% {
+    border-color: rgba(100, 120, 240, 0.4);
+  }
+  50% {
+    border-color: rgba(100, 120, 240, 0.8);
+  }
+  100% {
+    border-color: rgba(100, 120, 240, 0.4);
+  }
+} 

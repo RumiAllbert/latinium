@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latinium Test Client</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        button {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #2d3748;
+        }
+
+        button:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            color: #e53e3e;
+            padding: 10px;
+            background-color: #fff5f5;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: #38a169;
+            padding: 10px;
+            background-color: #f0fff4;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Latinium Test Client</h1>
+    <p>This simple test page allows you to check if the Latin analysis functionality is working.</p>
+
+    <div>
+        <h2>Input Latin Text</h2>
+        <textarea id="latinText"
+            placeholder="Enter Latin text here...">Gallia est omnis divisa in partes tres.</textarea>
+        <div>
+            <button id="analyzeBtn">Analyze Text</button>
+            <button id="mockBtn">Use Mock Data</button>
+        </div>
+    </div>
+
+    <div id="result">
+        <h2>Analysis Result</h2>
+        <div id="status"></div>
+        <pre id="output">Results will appear here...</pre>
+    </div>
+
+    <script>
+        const latinTextArea = document.getElementById('latinText');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const mockBtn = document.getElementById('mockBtn');
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+
+        // Direct API call to the server
+        analyzeBtn.addEventListener('click', async () => {
+            const text = latinTextArea.value.trim();
+            if (!text) {
+                status.innerHTML = '<div class="error">Please enter some Latin text.</div>';
+                return;
+            }
+
+            try {
+                status.innerHTML = '<div><span class="loading"></span> Analyzing text...</div>';
+                analyzeBtn.disabled = true;
+                mockBtn.disabled = true;
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.error || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+                status.innerHTML = '<div class="success">Analysis completed successfully!</div>';
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                status.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                output.textContent = 'Analysis failed. See error above.';
+            } finally {
+                analyzeBtn.disabled = false;
+                mockBtn.disabled = false;
+            }
+        });
+
+        // Generate mock data (client-side only)
+        mockBtn.addEventListener('click', () => {
+            const text = latinTextArea.value.trim();
+            if (!text) {
+                status.innerHTML = '<div class="error">Please enter some Latin text.</div>';
+                return;
+            }
+
+            // Simple mock data generation based on input text
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+
+            // Generate mock analysis data
+            const mockData = {
+                words: words.map((word, index) => {
+                    // Very simplified mock data
+                    return {
+                        word: word,
+                        partOfSpeech: ['noun', 'verb', 'adjective'][index % 3],
+                        lemma: word.toLowerCase(),
+                        morphology: {
+                            case: 'nominative',
+                            number: 'singular',
+                            gender: 'masculine'
+                        },
+                        relationships: []
+                    };
+                })
+            };
+
+            output.textContent = JSON.stringify(mockData, null, 2);
+            status.innerHTML = '<div class="success">Mock analysis generated (client-side only)!</div>';
+        });
+    </script>
+</body>
+
+</html>

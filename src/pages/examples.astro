@@ -1,0 +1,123 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+
+const examples = [
+  {
+    title: "Caesar's Gallic Wars",
+    author: "Julius Caesar",
+    excerpt:
+      "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
+    difficulty: "Intermediate",
+    category: "Historical",
+    year: "58-49 BC",
+  },
+  {
+    title: "In Catilinam",
+    author: "Cicero",
+    excerpt:
+      "Quousque tandem abutere, Catilina, patientia nostra? Quam diu etiam furor iste tuus nos eludet?",
+    difficulty: "Intermediate",
+    category: "Oratory",
+    year: "63 BC",
+  },
+  {
+    title: "Aeneid",
+    author: "Virgil",
+    excerpt:
+      "Arma virumque cano, Troiae qui primus ab oris Italiam, fato profugus, Laviniaque venit litora.",
+    difficulty: "Advanced",
+    category: "Epic Poetry",
+    year: "29-19 BC",
+  },
+  {
+    title: "Metamorphoses",
+    author: "Ovid",
+    excerpt:
+      "In nova fert animus mutatas dicere formas corpora; di, coeptis (nam vos mutastis et illas) adspirate meis primaque ab origine mundi ad mea perpetuum deducite tempora carmen!",
+    difficulty: "Advanced",
+    category: "Poetry",
+    year: "8 AD",
+  },
+  {
+    title: "De Rerum Natura",
+    author: "Lucretius",
+    excerpt:
+      "Aeneadum genetrix, hominum divumque voluptas, alma Venus, caeli subter labentia signa quae mare navigerum, quae terras frugiferentis concelebras.",
+    difficulty: "Advanced",
+    category: "Philosophical",
+    year: "1st century BC",
+  },
+  {
+    title: "Fabulae",
+    author: "Phaedrus",
+    excerpt:
+      "Lupus et agnus ad rivum eundem venerant siti compulsi; superior stabat lupus, longeque inferior agnus.",
+    difficulty: "Beginner",
+    category: "Fables",
+    year: "1st century AD",
+  },
+];
+---
+
+<MainLayout title="Examples - Latinium">
+  <div class="max-w-5xl mx-auto py-12 animate-fade-in">
+    <h1
+      class="text-4xl font-serif font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary-300 to-secondary-300"
+    >
+      Example Texts
+    </h1>
+
+    <p class="text-white/80 mb-12 max-w-3xl">
+      Explore these classic Latin texts to see how Latinium can help you analyze
+      and understand their grammatical structures. Click on any example to load
+      it into the analysis tool.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {
+        examples.map((example) => (
+          <a
+            href={`/?text=${encodeURIComponent(example.excerpt)}`}
+            class="glass-panel p-6 hover:bg-white/10 transition duration-300"
+          >
+            <div class="flex justify-between items-start mb-3">
+              <h2 class="text-xl font-serif font-medium">{example.title}</h2>
+              <span
+                class={`text-xs px-2 py-1 rounded-full ${example.difficulty === "Beginner" ? "bg-green-800/50" : example.difficulty === "Intermediate" ? "bg-amber-800/50" : "bg-red-800/50"}`}
+              >
+                {example.difficulty}
+              </span>
+            </div>
+
+            <p class="text-sm text-white/60 mb-4">
+              by {example.author} • {example.year} • {example.category}
+            </p>
+
+            <blockquote class="font-serif text-white/80 italic border-l-2 border-primary-400 pl-4 py-2 mb-4">
+              "{example.excerpt}"
+            </blockquote>
+
+            <div class="text-primary-300 text-sm flex items-center">
+              <span>Analyze this text</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</MainLayout>
+
