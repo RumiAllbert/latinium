@@ -61,6 +61,19 @@ export default function TextInputArea() {
       text.substring(0, 30) + "..."
     );
     setCharCount(text.length);
+
+    // Check for selected example from examples page
+    const selectedExample = localStorage.getItem("selected-latin-example");
+    if (selectedExample) {
+      setText(selectedExample);
+      setCharCount(selectedExample.length);
+      localStorage.removeItem("selected-latin-example");
+
+      // Analyze the example automatically after a slight delay
+      setTimeout(() => {
+        handleAnalysis();
+      }, 500);
+    }
   }, []);
 
   // Listen for analysis requests from other components
@@ -105,11 +118,21 @@ export default function TextInputArea() {
       );
       setText(exampleText);
       setCharCount(exampleText.length);
+
+      // Automatically analyze the text when an example is selected
+      setTimeout(() => {
+        handleAnalysis();
+      }, 300);
     } else {
       const truncatedText = exampleText.substring(0, CHAR_LIMIT);
       setText(truncatedText);
       setCharCount(truncatedText.length);
       console.warn("Example text truncated to match character limit");
+
+      // Automatically analyze the truncated text
+      setTimeout(() => {
+        handleAnalysis();
+      }, 300);
     }
   };
 
@@ -317,13 +340,13 @@ export default function TextInputArea() {
 
       <div className="flex gap-3 mt-6">
         <button
-          className="text-white/60 hover:text-white text-sm flex items-center gap-1 transition"
+          className="glass-button bg-white/5 hover:bg-white/15 px-3 py-2 rounded-lg text-sm text-white/70 hover:text-white flex items-center gap-1.5 transition-all"
           type="button"
           onClick={() => setExampleText(CAESAR_TEXT)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-3 w-3"
+            className="h-4 w-4 text-primary-300"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -332,19 +355,19 @@ export default function TextInputArea() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
           Caesar example
         </button>
         <button
-          className="text-white/60 hover:text-white text-sm flex items-center gap-1 transition"
+          className="glass-button bg-white/5 hover:bg-white/15 px-3 py-2 rounded-lg text-sm text-white/70 hover:text-white flex items-center gap-1.5 transition-all"
           type="button"
           onClick={() => setExampleText(CICERO_TEXT)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-3 w-3"
+            className="h-4 w-4 text-secondary-300"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -353,11 +376,31 @@ export default function TextInputArea() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
           Cicero example
         </button>
+        <a
+          href="/examples"
+          className="glass-button bg-white/5 hover:bg-primary-600/20 px-3 py-2 rounded-lg text-sm text-white/70 hover:text-primary-200 flex items-center gap-1.5 transition-all"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+          More
+        </a>
       </div>
     </div>
   );

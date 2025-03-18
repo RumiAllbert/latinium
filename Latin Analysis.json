@@ -1,0 +1,647 @@
+{
+  "words": [
+    {
+      "word": "Gallia",
+      "partOfSpeech": "noun",
+      "lemma": "Gallia",
+      "meaning": {
+        "short": "Gaul",
+        "detailed": "Refers to the geographical region of Gaul, encompassing modern-day France, Belgium, and parts of Switzerland, Germany, and Italy."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "subject-verb",
+          "relatedWordIndex": 1,
+          "description": "Gallia is the subject of the verb 'est'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "Gallia est divisa in provincias."
+        ]
+      }
+    },
+    {
+      "word": "est",
+      "partOfSpeech": "verb",
+      "lemma": "sum",
+      "meaning": {
+        "short": "is",
+        "detailed": "Third person singular present indicative of 'sum', meaning 'to be'."
+      },
+      "morphology": {
+        "person": "3",
+        "number": "singular",
+        "tense": "present",
+        "mood": "indicative",
+        "voice": "active"
+      },
+      "relationships": [
+        {
+          "type": "verb-subject",
+          "relatedWordIndex": 0,
+          "description": "The verb 'est' agrees with the subject 'Gallia'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [
+          "est",
+          "existit"
+        ],
+        "derivedForms": [
+          "fuit",
+          "erit"
+        ],
+        "usageExamples": [
+          "Deus est.",
+          "Roma magna erat."
+        ]
+      }
+    },
+    {
+      "word": "omnis",
+      "partOfSpeech": "adjective",
+      "lemma": "omnis",
+      "meaning": {
+        "short": "all",
+        "detailed": "Describes Gaul as a whole."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "adjective-noun",
+          "relatedWordIndex": 0,
+          "description": "Modifies the noun 'Gallia'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [
+          "tota",
+          "universa"
+        ],
+        "derivedForms": [],
+        "usageExamples": [
+          "Omnes viri fortes sunt."
+        ]
+      }
+    },
+    {
+      "word": "divisa",
+      "partOfSpeech": "verb",
+      "lemma": "divido",
+      "meaning": {
+        "short": "divided",
+        "detailed": "Perfect passive participle of 'divido', meaning 'to divide'."
+      },
+      "morphology": {
+        "person": "3",
+        "number": "singular",
+        "tense": "perfect",
+        "mood": "indicative",
+        "voice": "passive"
+      },
+      "relationships": [
+        {
+          "type": "predicate adjective",
+          "relatedWordIndex": 0,
+          "description": "Describes the state of Gallia"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "dividi",
+          "divisus"
+        ],
+        "usageExamples": [
+          "Imperium Romanum in provincias divisum est."
+        ]
+      }
+    },
+    {
+      "word": "in",
+      "partOfSpeech": "preposition",
+      "lemma": "in",
+      "meaning": {
+        "short": "into",
+        "detailed": "Indicates the direction or location of the division."
+      },
+      "morphology": {},
+      "relationships": [
+        {
+          "type": "preposition-object",
+          "relatedWordIndex": 5,
+          "description": "'in' governs the accusative 'partes'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "In urbem ibo."
+        ]
+      }
+    },
+    {
+      "word": "partes",
+      "partOfSpeech": "noun",
+      "lemma": "pars",
+      "meaning": {
+        "short": "parts",
+        "detailed": "Refers to the three parts of Gaul."
+      },
+      "morphology": {
+        "case": "accusative",
+        "number": "plural",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "object-preposition",
+          "relatedWordIndex": 4,
+          "description": "Object of the preposition 'in'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "Pars fortunae est."
+        ]
+      }
+    },
+    {
+      "word": "tres",
+      "partOfSpeech": "adjective",
+      "lemma": "tres",
+      "meaning": {
+        "short": "three",
+        "detailed": "Specifies the number of parts."
+      },
+      "morphology": {
+        "case": "accusative",
+        "number": "plural",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "adjective-noun",
+          "relatedWordIndex": 5,
+          "description": "Modifies the noun 'partes'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "Tres viri venerunt."
+        ]
+      }
+    },
+    {
+      "word": "quarum",
+      "partOfSpeech": "pronoun",
+      "lemma": "qui",
+      "meaning": {
+        "short": "of which",
+        "detailed": "Genitive plural feminine relative pronoun, referring to 'partes'."
+      },
+      "morphology": {
+        "case": "genitive",
+        "number": "plural",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "relative pronoun",
+          "relatedWordIndex": 5,
+          "description": "Refers back to 'partes'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "quorum",
+          "quarum",
+          "quibus"
+        ],
+        "usageExamples": [
+          "Haec est domus, in qua habito."
+        ]
+      }
+    },
+    {
+      "word": "unam",
+      "partOfSpeech": "pronoun",
+      "lemma": "unus",
+      "meaning": {
+        "short": "one",
+        "detailed": "Accusative singular feminine of 'unus', meaning 'one'."
+      },
+      "morphology": {
+        "case": "accusative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "object-verb",
+          "relatedWordIndex": 10,
+          "description": "Object of the verb 'incolunt'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "unus",
+          "una",
+          "unum"
+        ],
+        "usageExamples": [
+          "Unus homo venit."
+        ]
+      }
+    },
+    {
+      "word": "incolun",
+      "partOfSpeech": "verb",
+      "lemma": "incolo",
+      "meaning": {
+        "short": "inhabit",
+        "detailed": "Third person plural present active indicative of 'incolo', meaning 'to inhabit'."
+      },
+      "morphology": {
+        "person": "3",
+        "number": "plural",
+        "tense": "present",
+        "mood": "indicative",
+        "voice": "active"
+      },
+      "relationships": [
+        {
+          "type": "verb-subject",
+          "relatedWordIndex": 11,
+          "description": "Belgae is the subject of the verb 'incolunt'"
+        },
+        {
+          "type": "verb-object",
+          "relatedWordIndex": 9,
+          "description": "'incolun' takes the accusative 'unam'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "incola",
+          "incolere"
+        ],
+        "usageExamples": [
+          "Hi homines hanc terram incolunt."
+        ]
+      }
+    },
+    {
+      "word": "Belgae",
+      "partOfSpeech": "noun",
+      "lemma": "Belgae",
+      "meaning": {
+        "short": "Belgians",
+        "detailed": "Refers to the Belgae tribe."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "subject-verb",
+          "relatedWordIndex": 10,
+          "description": "Subject of the verb 'incolunt'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "Belgae fortes erant."
+        ]
+      }
+    },
+    {
+      "word": "aliam",
+      "partOfSpeech": "pronoun",
+      "lemma": "alius",
+      "meaning": {
+        "short": "another",
+        "detailed": "Accusative singular feminine of 'alius', meaning 'another'."
+      },
+      "morphology": {
+        "case": "accusative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "object-verb",
+          "relatedWordIndex": 13,
+          "description": "Object of the verb 'incolun'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "alius",
+          "alia",
+          "alium"
+        ],
+        "usageExamples": [
+          "Habeo alium librum."
+        ]
+      }
+    },
+    {
+      "word": "Aquitani",
+      "partOfSpeech": "noun",
+      "lemma": "Aquitani",
+      "meaning": {
+        "short": "Aquitanians",
+        "detailed": "Refers to the Aquitani tribe."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "subject-verb",
+          "relatedWordIndex": 13,
+          "description": "Subject of the verb 'incolun'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": []
+      }
+    },
+    {
+      "word": "tertiam",
+      "partOfSpeech": "pronoun",
+      "lemma": "tertius",
+      "meaning": {
+        "short": "third",
+        "detailed": "Accusative singular feminine of 'tertius', meaning 'third'."
+      },
+      "morphology": {
+        "case": "accusative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "object-verb",
+          "relatedWordIndex": 16,
+          "description": "Object of the verb 'incolun'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "tertius",
+          "tertia",
+          "tertium"
+        ],
+        "usageExamples": [
+          "Tertius frater est."
+        ]
+      }
+    },
+    {
+      "word": "qui",
+      "partOfSpeech": "pronoun",
+      "lemma": "qui",
+      "meaning": {
+        "short": "who",
+        "detailed": "Nominative masculine plural relative pronoun, referring to the inhabitants of the third part."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "relative pronoun",
+          "relatedWordIndex": 17,
+          "description": "Refers to the inhabitants of the third part"
+        },
+        {
+          "type": "subject-verb",
+          "relatedWordIndex": 16,
+          "description": "Subject of the verb 'appellantur'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "quorum",
+          "quarum",
+          "quibus"
+        ],
+        "usageExamples": [
+          "Homo, qui venit, amicus meus est."
+        ]
+      }
+    },
+    {
+      "word": "ipsorum",
+      "partOfSpeech": "pronoun",
+      "lemma": "ipse",
+      "meaning": {
+        "short": "their",
+        "detailed": "Genitive plural masculine possessive pronoun, referring to the Celts."
+      },
+      "morphology": {
+        "case": "genitive",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "possessive pronoun",
+          "relatedWordIndex": 17,
+          "description": "Modifies the noun 'lingua'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "ipse",
+          "ipsa",
+          "ipsum"
+        ],
+        "usageExamples": [
+          "Ipsa regina venit."
+        ]
+      }
+    },
+    {
+      "word": "lingua",
+      "partOfSpeech": "noun",
+      "lemma": "lingua",
+      "meaning": {
+        "short": "language",
+        "detailed": "Refers to the Celtic language."
+      },
+      "morphology": {
+        "case": "ablative",
+        "number": "singular",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "adjective-noun",
+          "relatedWordIndex": 16,
+          "description": "Modified by the relative clause 'qui...Celtae'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": [
+          "Lingua Latina."
+        ]
+      }
+    },
+    {
+      "word": "Celtae",
+      "partOfSpeech": "noun",
+      "lemma": "Celtae",
+      "meaning": {
+        "short": "Celts",
+        "detailed": "Refers to the Celtic people."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "subject-verb",
+          "relatedWordIndex": 18,
+          "description": "Subject of the verb 'appellantur'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": []
+      }
+    },
+    {
+      "word": "nostra",
+      "partOfSpeech": "adjective",
+      "lemma": "noster",
+      "meaning": {
+        "short": "our",
+        "detailed": "Nominative plural feminine possessive adjective, referring to the Romans."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "feminine"
+      },
+      "relationships": [
+        {
+          "type": "adjective-noun",
+          "relatedWordIndex": 19,
+          "description": "Modifies the noun 'lingua'"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "noster",
+          "nostra",
+          "nostrum"
+        ],
+        "usageExamples": [
+          "Nostra patria."
+        ]
+      }
+    },
+    {
+      "word": "Galli",
+      "partOfSpeech": "noun",
+      "lemma": "Gallus",
+      "meaning": {
+        "short": "Gauls",
+        "detailed": "Refers to the Gauls as called by the Romans."
+      },
+      "morphology": {
+        "case": "nominative",
+        "number": "plural",
+        "gender": "masculine"
+      },
+      "relationships": [
+        {
+          "type": "appositive",
+          "relatedWordIndex": 17,
+          "description": "Provides another name for the Celts"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [],
+        "usageExamples": []
+      }
+    },
+    {
+      "word": "appellantur",
+      "partOfSpeech": "verb",
+      "lemma": "appello",
+      "meaning": {
+        "short": "are called",
+        "detailed": "Third person plural present passive indicative of 'appello', meaning 'to call'."
+      },
+      "morphology": {
+        "person": "3",
+        "number": "plural",
+        "tense": "present",
+        "mood": "indicative",
+        "voice": "passive"
+      },
+      "relationships": [
+        {
+          "type": "verb-subject",
+          "relatedWordIndex": 17,
+          "description": "Celtae are called Galli by the Romans"
+        }
+      ],
+      "relatedWords": {
+        "synonyms": [],
+        "derivedForms": [
+          "appellare",
+          "appellatus"
+        ],
+        "usageExamples": [
+          "Rex a populo appellatus est."
+        ]
+      }
+    }
+  ]
+}

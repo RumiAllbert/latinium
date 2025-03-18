@@ -1,123 +1,128 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { ViewTransitions } from "astro:transitions";
 
+// Example text collection
 const examples = [
   {
-    title: "Caesar's Gallic Wars",
+    id: "caesar-gallic",
     author: "Julius Caesar",
-    excerpt:
-      "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
-    difficulty: "Intermediate",
-    category: "Historical",
-    year: "58-49 BC",
+    title: "De Bello Gallico",
+    text: "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
+    description:
+      "The opening line of Caesar's Gallic Wars, describing the division of Gaul.",
   },
   {
-    title: "In Catilinam",
+    id: "cicero-catiline",
     author: "Cicero",
-    excerpt:
-      "Quousque tandem abutere, Catilina, patientia nostra? Quam diu etiam furor iste tuus nos eludet?",
-    difficulty: "Intermediate",
-    category: "Oratory",
-    year: "63 BC",
+    title: "In Catilinam",
+    text: "Quousque tandem abutere, Catilina, patientia nostra? Quam diu etiam furor iste tuus nos eludet?",
+    description:
+      "Cicero's famous opening against Catiline, challenging his conspiracy.",
   },
   {
-    title: "Aeneid",
+    id: "virgil-aeneid",
     author: "Virgil",
-    excerpt:
-      "Arma virumque cano, Troiae qui primus ab oris Italiam, fato profugus, Laviniaque venit litora.",
-    difficulty: "Advanced",
-    category: "Epic Poetry",
-    year: "29-19 BC",
+    title: "Aeneid",
+    text: "Arma virumque cano, Troiae qui primus ab oris Italiam, fato profugus, Laviniaque venit litora.",
+    description: "The opening lines of Virgil's epic poem about Aeneas.",
   },
   {
-    title: "Metamorphoses",
+    id: "ovid-metamorphoses",
     author: "Ovid",
-    excerpt:
-      "In nova fert animus mutatas dicere formas corpora; di, coeptis (nam vos mutastis et illas) adspirate meis primaque ab origine mundi ad mea perpetuum deducite tempora carmen!",
-    difficulty: "Advanced",
-    category: "Poetry",
-    year: "8 AD",
+    title: "Metamorphoses",
+    text: "In nova fert animus mutatas dicere formas corpora; di, coeptis (nam vos mutastis et illas) adspirate meis primaque ab origine mundi ad mea perpetuum deducite tempora carmen.",
+    description: "Ovid begins his collection of mythological transformations.",
   },
   {
-    title: "De Rerum Natura",
-    author: "Lucretius",
-    excerpt:
-      "Aeneadum genetrix, hominum divumque voluptas, alma Venus, caeli subter labentia signa quae mare navigerum, quae terras frugiferentis concelebras.",
-    difficulty: "Advanced",
-    category: "Philosophical",
-    year: "1st century BC",
+    id: "seneca-vita",
+    author: "Seneca",
+    title: "De Brevitate Vitae",
+    text: "Maior pars mortalium, Pauline, de naturae malignitate conqueritur, quod in exiguum aevi gignimur, quod haec tam velociter, tam rapide dati nobis temporis spatia decurrant.",
+    description: "Seneca's reflection on the shortness of life.",
   },
   {
-    title: "Fabulae",
-    author: "Phaedrus",
-    excerpt:
-      "Lupus et agnus ad rivum eundem venerant siti compulsi; superior stabat lupus, longeque inferior agnus.",
-    difficulty: "Beginner",
-    category: "Fables",
-    year: "1st century AD",
+    id: "tacitus-germania",
+    author: "Tacitus",
+    title: "Germania",
+    text: "Germania omnis a Gallis Raetisque et Pannoniis Rheno et Danuvio fluminibus, a Sarmatis Dacisque mutuo metu aut montibus separatur.",
+    description: "Tacitus describes the geography of Germania.",
   },
 ];
 ---
 
-<MainLayout title="Examples - Latinium">
-  <div class="max-w-5xl mx-auto py-12 animate-fade-in">
-    <h1
-      class="text-4xl font-serif font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary-300 to-secondary-300"
-    >
-      Example Texts
-    </h1>
+<MainLayout
+  title="Latinium.ai - Latin Text Examples"
+  description="Explore famous Latin text examples with Latinium.ai's Latin analysis tools"
+>
+  <ViewTransitions />
 
-    <p class="text-white/80 mb-12 max-w-3xl">
-      Explore these classic Latin texts to see how Latinium can help you analyze
-      and understand their grammatical structures. Click on any example to load
-      it into the analysis tool.
+  <div class="max-w-4xl mx-auto py-12">
+    <h1 class="text-3xl font-serif text-white mb-8">Latin Text Examples</h1>
+
+    <p class="text-white/70 mb-12">
+      Explore these famous examples from Latin literature. Click on any example
+      to load it into the analyzer.
     </p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {
         examples.map((example) => (
-          <a
-            href={`/?text=${encodeURIComponent(example.excerpt)}`}
-            class="glass-panel p-6 hover:bg-white/10 transition duration-300"
-          >
-            <div class="flex justify-between items-start mb-3">
-              <h2 class="text-xl font-serif font-medium">{example.title}</h2>
-              <span
-                class={`text-xs px-2 py-1 rounded-full ${example.difficulty === "Beginner" ? "bg-green-800/50" : example.difficulty === "Intermediate" ? "bg-amber-800/50" : "bg-red-800/50"}`}
-              >
-                {example.difficulty}
-              </span>
+          <div class="glass-panel p-6 hover:bg-white/15 transition-all group">
+            <h2 class="text-xl font-serif text-primary-300 mb-1 group-hover:text-primary-200">
+              {example.title}
+            </h2>
+            <p class="text-white/60 text-sm mb-4">by {example.author}</p>
+
+            <div class="font-serif italic text-white/80 mb-4 leading-relaxed">
+              "
+              {example.text.length > 150
+                ? example.text.substring(0, 150) + "..."
+                : example.text}
+              "
             </div>
 
-            <p class="text-sm text-white/60 mb-4">
-              by {example.author} • {example.year} • {example.category}
-            </p>
+            <p class="text-white/70 text-sm mb-6">{example.description}</p>
 
-            <blockquote class="font-serif text-white/80 italic border-l-2 border-primary-400 pl-4 py-2 mb-4">
-              "{example.excerpt}"
-            </blockquote>
-
-            <div class="text-primary-300 text-sm flex items-center">
-              <span>Analyze this text</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 ml-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
-            </div>
-          </a>
+            <a
+              href="/"
+              class="glass-button inline-block bg-primary-600/20 hover:bg-primary-600/40 text-primary-200 hover:text-primary-100 py-2 px-4 rounded-lg transition-all text-center"
+              data-example-id={example.id}
+            >
+              Analyze This Text
+            </a>
+          </div>
         ))
       }
     </div>
-  </div>
-</MainLayout>
 
+    <div class="mt-12 text-center">
+      <a
+        href="/"
+        class="glass-button py-3 px-6 text-white/80 hover:text-white transition-all"
+      >
+        Return to Analyzer
+      </a>
+    </div>
+  </div>
+
+  <script define:vars={{ examples }}>
+    // This will help with loading examples when users return to the main page
+    document.addEventListener("astro:page-load", () => {
+      const exampleLinks = document.querySelectorAll("[data-example-id]");
+
+      exampleLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const exampleId = link.getAttribute("data-example-id");
+          const example = examples.find((ex) => ex.id === exampleId);
+
+          if (example && example.text) {
+            localStorage.setItem("selected-latin-example", example.text);
+            window.location.href = "/";
+          }
+        });
+      });
+    });
+  </script>
+</MainLayout>

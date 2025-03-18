@@ -2,132 +2,194 @@
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<MainLayout title="About - Latinium">
-  <div class="max-w-4xl mx-auto py-12 animate-fade-in">
-    <h1
-      class="text-4xl font-serif font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary-300 to-secondary-300"
-    >
-      About Latinium
+<MainLayout
+  title="About Latinium.ai"
+  description="Learn about Latinium.ai, our mission, and how we're making Latin language analysis accessible and engaging."
+>
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-serif font-bold mb-12 text-center">
+      About Latinium.ai
     </h1>
 
     <div class="glass-panel p-8 mb-12">
-      <h2 class="text-2xl font-serif font-medium mb-4">Our Mission</h2>
-      <p class="text-white/80 mb-6 leading-relaxed">
-        Latinium is a cutting-edge web-based application that provides
-        comprehensive Latin text analysis through intuitive visualization and
-        interactive annotation features. Our mission is to make Latin language
-        analysis accessible, engaging, and insightful for students, educators,
-        and Latin enthusiasts.
+      <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
+      <p class="mb-6 leading-relaxed">
+        Latinium.ai was born from a passion for classical languages and a vision
+        to make Latin analysis more accessible and engaging to everyone. Our
+        platform combines modern technology with classical education to create
+        an intuitive and powerful tool for exploring Latin texts.
       </p>
-      <p class="text-white/80 leading-relaxed">
-        Powered by Google's Gemini AI, Latinium helps users understand complex
-        grammatical structures and relationships within Latin texts through
-        dynamic visual representations. Whether you're a beginner learning the
-        basics or a scholar working with advanced texts, Latinium is designed to
-        enhance your understanding and appreciation of the Latin language.
+      <p class="leading-relaxed">
+        Powered by custom AI, Latinium.ai helps users understand complex
+        grammatical structures and relationships through dynamic visual
+        representations. Whether you're a student tackling Latin for the first
+        time, an educator seeking better teaching tools, or a scholar conducting
+        research, our platform provides valuable insights that enhance
+        comprehension and appreciation of Latin texts.
       </p>
     </div>
 
-    <div class="glass-panel p-8 mb-12">
-      <h2 class="text-2xl font-serif font-medium mb-4">Key Technologies</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-xl font-medium mb-3 text-primary-300">Frontend</h3>
-          <ul class="space-y-2 text-white/80">
-            <li class="flex items-start">
-              <span class="text-primary-300 mr-2">•</span>
-              <span
-                >Astro framework for high-performance static site generation</span
-              >
-            </li>
-            <li class="flex items-start">
-              <span class="text-primary-300 mr-2">•</span>
-              <span>Ultra-modern, glass-morphic UI design with TailwindCSS</span
-              >
-            </li>
-            <li class="flex items-start">
-              <span class="text-primary-300 mr-2">•</span>
-              <span>Interactive visualizations using D3.js</span>
-            </li>
-            <li class="flex items-start">
-              <span class="text-primary-300 mr-2">•</span>
-              <span>TypeScript for type safety and code maintainability</span>
-            </li>
-          </ul>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div class="glass-panel p-8">
+        <h2 class="text-2xl font-bold mb-4">Key Technologies</h2>
+        <ul class="space-y-4">
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Astro framework for fast, optimized web performance</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Interactive visualizations with D3.js</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Custom AI for advanced language processing</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Modern UI with TailwindCSS</span>
+          </li>
+        </ul>
+      </div>
 
-        <div>
-          <h3 class="text-xl font-medium mb-3 text-secondary-300">
-            Backend/API
-          </h3>
-          <ul class="space-y-2 text-white/80">
-            <li class="flex items-start">
-              <span class="text-secondary-300 mr-2">•</span>
-              <span>Google's Gemini AI for advanced language processing</span>
-            </li>
-            <li class="flex items-start">
-              <span class="text-secondary-300 mr-2">•</span>
-              <span
-                >Latin text processing pipeline with structured JSON output</span
-              >
-            </li>
-            <li class="flex items-start">
-              <span class="text-secondary-300 mr-2">•</span>
-              <span>Caching system for frequently analyzed texts</span>
-            </li>
-            <li class="flex items-start">
-              <span class="text-secondary-300 mr-2">•</span>
-              <span>User authentication for saving analyses and settings</span>
-            </li>
-          </ul>
-        </div>
+      <div class="glass-panel p-8">
+        <h2 class="text-2xl font-bold mb-4">Who It's For</h2>
+        <ul class="space-y-4">
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span
+              ><strong>Students</strong> - Visual learning tools to supplement textbook
+              studies</span
+            >
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span
+              ><strong>Educators</strong> - Interactive resources for teaching complex
+              grammatical concepts</span
+            >
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span
+              ><strong>Scholars</strong> - Advanced tools for textual analysis and
+              research</span
+            >
+          </li>
+          <li class="flex items-start">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-primary-300 mr-2 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span
+              ><strong>Latin Enthusiasts</strong> - Accessible tools for deeper engagement
+              with Latin texts</span
+            >
+          </li>
+        </ul>
       </div>
     </div>
 
-    <div class="glass-panel p-8">
-      <h2 class="text-2xl font-serif font-medium mb-4">Target Audience</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="flex items-center p-4 bg-white/5 rounded-lg">
-          <div class="mr-4 text-primary-400 text-3xl">👨‍🎓</div>
-          <div>
-            <h3 class="font-medium mb-1">Students</h3>
-            <p class="text-white/70 text-sm">
-              High school through university students studying Latin
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center p-4 bg-white/5 rounded-lg">
-          <div class="mr-4 text-primary-400 text-3xl">👩‍🏫</div>
-          <div>
-            <h3 class="font-medium mb-1">Educators</h3>
-            <p class="text-white/70 text-sm">
-              Latin teachers seeking visual aids and teaching tools
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center p-4 bg-white/5 rounded-lg">
-          <div class="mr-4 text-primary-400 text-3xl">🧑‍🔬</div>
-          <div>
-            <h3 class="font-medium mb-1">Scholars</h3>
-            <p class="text-white/70 text-sm">
-              Academics and researchers working with Latin texts
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center p-4 bg-white/5 rounded-lg">
-          <div class="mr-4 text-primary-400 text-3xl">🤓</div>
-          <div>
-            <h3 class="font-medium mb-1">Enthusiasts</h3>
-            <p class="text-white/70 text-sm">
-              Latin enthusiasts looking to improve their understanding
-            </p>
-          </div>
-        </div>
-      </div>
+    <div class="text-center">
+      <a
+        href="/"
+        class="btn-primary inline-block px-8 py-3 rounded-lg text-lg font-medium"
+      >
+        Try Latinium.ai Now
+      </a>
     </div>
   </div>
 </MainLayout>
-
