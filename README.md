@@ -83,29 +83,27 @@ This visualization helps you instantly recognize grammatical patterns and unders
 ## 📁 Project Structure
 
 ```
-/src
- ├── components/        # UI components
- │   ├── TextAnalysisPanel.astro    # Main analysis interface
- │   ├── TextAnalysisResult.tsx     # Analysis results display
- │   └── InteractiveWordRelationships.tsx # Relationship visualization
- ├── layouts/           # Page layouts
- ├── pages/             # Astro pages (routes)
- │   └── api/
- │       └── analyze.ts # API route for development (Astro)
- ├── styles/            # Global CSS
- ├── types/             # TypeScript definitions
- └── utils/             # Helper functions
-/netlify
- └── functions/         # Netlify serverless functions
-     ├── analyze.ts     # Serverless API endpoint
-     ├── types.ts       # Shared type definitions
-     └── cache.ts       # API response caching
+latinium
+├── src/                # Source code
+│   ├── components/     # Reusable UI components
+│   │   ├── ui/         # Basic UI components
+│   │   └── ...         # Feature-specific components
+│   ├── layouts/        # Page layouts
+│   ├── pages/          # Astro pages (file-based routing)
+│   │   └── index.astro # Homepage
+│   ├── styles/         # Global styles
+│   ├── utils/          # Utility functions
+│   │   ├── directGeminiApi.ts # Direct client-side API integration
+│   │   ├── mockData.ts # Fallback data when API is unavailable
+│   │   └── textUtils.ts # Text processing utilities
+│   └── types/          # TypeScript type definitions
+└── public/             # Static assets
 ```
 
 ## 🛠️ Technical Notes
 
-- **Current Output Mode**: Static site generation with Netlify Functions (`output: 'static'`)
-- **API Implementation**: Uses Netlify Functions for serverless API endpoints
+- **Current Output Mode**: Static site generation (`output: 'static'`)
+- **API Implementation**: Uses direct client-side API integration with Google's Gemini API
 - **Node.js Requirement**: This project requires v18.14.1+ (critical)
 - **Fallback System**: Gracefully falls back to mock data when API is unavailable
 
@@ -116,30 +114,16 @@ This visualization helps you instantly recognize grammatical patterns and unders
 1. Fork/Clone this repository
 2. Connect to Netlify
 3. Configure the environment variable:
-   - `GEMINI_API_KEY`: Your Google Gemini API key
-4. Deploy! The build will automatically use Netlify Functions for the API
+   - `PUBLIC_GEMINI_API_KEY`: Your Google Gemini API key
+4. Deploy! The build will automatically include your API key in the client-side code
 
 ### Using the API Locally
 
 For local development with full API functionality:
 
 1. Ensure you have Node.js v18.14.1+ installed
-2. Configure your `.env` file with your Gemini API key
+2. Configure your `.env` file with your Gemini API key as `PUBLIC_GEMINI_API_KEY`
 3. Run in development mode: `npm run dev`
-
-### Alternative Server Deployment
-
-If you prefer deploying to a Node.js server instead of Netlify:
-
-1. Update `astro.config.mjs` to use server mode:
-   ```js
-   output: 'server',
-   adapter: node({
-     mode: 'standalone'
-   }),
-   ```
-2. Install the Node adapter: `npm install @astrojs/node --save-dev`
-3. Deploy to a Node.js hosting service like Vercel, Render, or DigitalOcean
 
 ## 🔮 Future Enhancements
 

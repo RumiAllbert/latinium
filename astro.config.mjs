@@ -47,6 +47,8 @@ export default defineConfig({
     define: {
       // Make env variables available to client-side code if needed
       'import.meta.env.GEMINI_API_KEY': JSON.stringify(envVars.GEMINI_API_KEY || ''),
+      // Add a PUBLIC_ prefixed version for safe client-side use
+      'import.meta.env.PUBLIC_GEMINI_API_KEY': JSON.stringify(envVars.GEMINI_API_KEY || ''),
     },
   },
   build: {

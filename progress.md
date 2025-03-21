@@ -117,4 +117,38 @@ Last Updated: May 29, 2024
 - Implemented hover effects to highlight connections
 - Added relationship type filtering
 - Enabled focus mode for targeted analysis
-- Integrated with main analysis display 
+- Integrated with main analysis display
+
+## 2025-03-21: Major Architectural Refactoring - Direct API Integration
+
+### Summary
+Completely overhauled the application architecture by removing the Netlify Functions layer and implementing direct client-side integration with Google's Gemini API.
+
+### Changes
+- Created a new `directGeminiApi.ts` utility for direct client-side API calls
+- Added text processing utilities for handling API responses
+- Created a demo page showcasing the direct API approach
+- Simplified project structure by removing unnecessary serverless functions
+- Updated configuration to support public environment variables
+- Created comprehensive documentation on the direct API approach
+
+### Motivation
+The Netlify Functions approach was causing persistent timeout issues with the 10-second default limit for serverless functions. The direct client-side approach eliminates these timeout problems, simplifies the architecture, and improves debugging capabilities.
+
+### Benefits
+- Eliminated timeout issues by removing the serverless layer
+- Simplified deployment and maintenance
+- Improved performance by removing the middle layer
+- Enhanced debugging capabilities with all code running in the browser
+- Reduced complexity of the overall application
+
+### Technical Details
+- Added appropriate CORS handling and security considerations
+- Implemented proper timeout management on the client side
+- Added graceful fallback to mock data when the API is unavailable
+- Created a parallel implementation to allow users to choose between direct API or Netlify Functions
+
+### Next Steps
+- Monitor performance and user feedback on the direct API approach
+- Consider completely removing the Netlify Functions implementation if the direct approach proves more reliable
+- Add API key restrictions in Google Cloud Console to limit usage to our domain 

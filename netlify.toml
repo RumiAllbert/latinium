@@ -1,45 +1,15 @@
 [build]
 command = "npm run build"
 publish = "dist"
-functions = "netlify/functions"
 
-# Redirect API requests to Netlify Functions with more specific rules
-[[redirects]]
-from = "/api/analyze"
-to = "/.netlify/functions/analyze"
-status = 200
-force = true
-# Add these specific conditions to ensure proper handling of API requests
-[redirects.headers]
-Access-Control-Allow-Origin = "*"
-
-# Explicitly handle OPTIONS preflight requests for API
-[[redirects]]
-from = "/api/analyze"
-to = "/.netlify/functions/analyze"
-status = 200
-method = "OPTIONS"
-force = true
-[redirects.headers]
-Access-Control-Allow-Origin = "*"
-Access-Control-Allow-Headers = "Content-Type, Authorization"
-Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-
-# Fallback for SPA routing
+# Simple fallback for SPA routing
 [[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
 
-[functions]
-node_bundler = "esbuild"
-included_files = [".env"]
-# Extend the function timeout to 30 seconds (maximum for Netlify Functions on regular plans)
-[functions.analyze]
-timeout = 30
-
 [build.environment]
-# Ensure we're using Node.js 18 or higher (required for Gemini API)
+# Ensure we're using Node.js 18 or higher (required for modern JavaScript features)
 NODE_VERSION = "18"
 
 [dev]

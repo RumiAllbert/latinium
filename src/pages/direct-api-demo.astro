@@ -1,0 +1,163 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title="Direct Gemini API Demo - Latinium">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Latinium - Direct API Demo</h1>
+    <p class="mb-6">
+      This demo uses the Gemini API directly from the browser, avoiding Netlify
+      Functions altogether.
+    </p>
+
+    <div class="mb-8 bg-gray-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Analyze Latin Text</h2>
+      <div class="mb-4">
+        <label for="latinText" class="block mb-2">Enter Latin text:</label>
+        <textarea
+          id="latinText"
+          class="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 h-32"
+          placeholder="Enter Latin text to analyze..."></textarea>
+      </div>
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button
+          id="analyzeBtn"
+          class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded"
+        >
+          Analyze Text
+        </button>
+        <button
+          id="streamingBtn"
+          class="bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded"
+        >
+          Stream Analysis
+        </button>
+      </div>
+      <div id="loadingIndicator" class="hidden mb-4">
+        <div class="flex items-center">
+          <div
+            class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"
+          >
+          </div>
+          <span id="loadingText">Analyzing...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-6 bg-gray-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Analysis Results</h2>
+      <div
+        id="resultArea"
+        class="bg-gray-700 rounded p-4 min-h-40 whitespace-pre-wrap"
+      >
+        Results will appear here...
+      </div>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">How It Works</h2>
+      <ul class="list-disc pl-5 space-y-2">
+        <li>
+          This demo uses Google's official Gemini JavaScript SDK directly in the
+          browser
+        </li>
+        <li>
+          Your API key is securely passed as a public environment variable
+        </li>
+        <li>No server-side code or Netlify Functions are needed</li>
+        <li>
+          The analysis happens entirely between your browser and Google's API
+        </li>
+      </ul>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  import { analyzeLatin } from "../utils/directGeminiApi";
+
+  // Get DOM elements
+  const latinText = document.getElementById("latinText") as HTMLTextAreaElement;
+  const analyzeBtn = document.getElementById("analyzeBtn") as HTMLButtonElement;
+  const streamingBtn = document.getElementById(
+    "streamingBtn"
+  ) as HTMLButtonElement;
+  const resultArea = document.getElementById("resultArea") as HTMLDivElement;
+  const loadingIndicator = document.getElementById(
+    "loadingIndicator"
+  ) as HTMLDivElement;
+  const loadingText = document.getElementById("loadingText") as HTMLSpanElement;
+
+  // Default sample text
+  latinText.value = "Gallia est omnis divisa in partes tres.";
+
+  // Regular analysis
+  analyzeBtn.addEventListener("click", async () => {
+    const text = latinText.value.trim();
+    if (!text) {
+      resultArea.textContent = "Please enter some Latin text to analyze.";
+      return;
+    }
+
+    // Show loading
+    loadingIndicator.classList.remove("hidden");
+    loadingText.textContent = "Analyzing...";
+    resultArea.textContent = "Processing your request...";
+
+    try {
+      const { result, isMockData } = await analyzeLatin(text);
+
+      // Display result
+      resultArea.innerHTML = `<div class="mb-2 ${isMockData ? "text-yellow-400" : "text-green-400"}">
+        ${isMockData ? "⚠️ Using mock data (API key may be missing or invalid)" : "✅ Analysis complete"}
+      </div>`;
+
+      // Format and display the actual analysis
+      resultArea.innerHTML += `<pre class="text-sm overflow-auto">${JSON.stringify(result, null, 2)}</pre>`;
+    } catch (error) {
+      resultArea.textContent = `Error: ${error instanceof Error ? error.message : String(error)}`;
+    } finally {
+      loadingIndicator.classList.add("hidden");
+    }
+  });
+
+  // Streaming analysis
+  streamingBtn.addEventListener("click", async () => {
+    const text = latinText.value.trim();
+    if (!text) {
+      resultArea.textContent = "Please enter some Latin text to analyze.";
+      return;
+    }
+
+    // Show loading
+    loadingIndicator.classList.remove("hidden");
+    loadingText.textContent = "Streaming analysis...";
+    resultArea.textContent = "Starting stream...";
+
+    try {
+      let responseText = "";
+
+      // Call API with streaming option
+      const { result, isMockData } = await analyzeLatin(text, {
+        stream: true,
+        onStreamChunk: (chunk) => {
+          responseText += chunk;
+          resultArea.textContent = responseText;
+        },
+      });
+
+      // When complete, format the final result
+      resultArea.innerHTML = `<div class="mb-2 ${isMockData ? "text-yellow-400" : "text-green-400"}">
+        ${isMockData ? "⚠️ Using mock data (API key may be missing or invalid)" : "✅ Stream complete"}
+      </div>`;
+
+      // Format and display the actual analysis
+      resultArea.innerHTML += `<pre class="text-sm overflow-auto">${JSON.stringify(result, null, 2)}</pre>`;
+    } catch (error) {
+      resultArea.textContent = `Error: ${error instanceof Error ? error.message : String(error)}`;
+    } finally {
+      loadingIndicator.classList.add("hidden");
+    }
+  });
+</script>
+
