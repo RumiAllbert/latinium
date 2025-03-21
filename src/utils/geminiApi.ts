@@ -3,6 +3,20 @@ import { getUserFriendlyErrorMessage, logDebugError, trySafe } from './errorHand
 import { getMockAnalysisData } from './mockData';
 
 /**
+ * Returns the appropriate API endpoint URL based on the environment
+ */
+function getApiEndpoint(): string {
+  // When running locally or in dev mode, use the Astro API endpoint
+  if (import.meta.env.DEV) {
+    return '/api/analyze';
+  }
+  
+  // In production on Netlify, use the Netlify function endpoint
+  // The Netlify.toml redirects will handle mapping /api/analyze to /.netlify/functions/analyze
+  return '/api/analyze';
+}
+
+/**
  * Analyzes Latin text using the Gemini API.
  * 
  * @param text The Latin text to analyze
@@ -75,7 +89,10 @@ async function handleRegularRequest(text: string): Promise<{
   result: AnalysisResult,
   isMockData: boolean
 }> {
-  const response = await fetch('/api/analyze', {
+  const apiEndpoint = getApiEndpoint();
+  console.log(`Sending request to API endpoint: ${apiEndpoint}`);
+  
+  const response = await fetch(apiEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -139,8 +156,11 @@ async function handleStreamingRequest(
   result: AnalysisResult,
   isMockData: boolean
 }> {
+  const apiEndpoint = getApiEndpoint();
+  console.log(`Sending streaming request to API endpoint: ${apiEndpoint}`);
+  
   // Create a ReadableStream to receive streamed data
-  const response = await fetch('/api/analyze', {
+  const response = await fetch(apiEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

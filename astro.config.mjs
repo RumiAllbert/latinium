@@ -1,4 +1,3 @@
-import node from '@astrojs/node';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
@@ -42,15 +41,15 @@ export default defineConfig({
     tailwind(),
     react(),
   ],
-  output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
-  site: 'https://latinium.app',
+  output: 'static',
+  site: 'https://latinium.rumiallbert.com',
   vite: {
     define: {
       // Make env variables available to client-side code if needed
       'import.meta.env.GEMINI_API_KEY': JSON.stringify(envVars.GEMINI_API_KEY || ''),
     },
+  },
+  build: {
+    format: 'directory'
   }
 }); 

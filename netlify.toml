@@ -1,0 +1,24 @@
+[build]
+command = "npm run build"
+publish = "dist"
+functions = "netlify/functions"
+
+# Redirect API requests to Netlify Functions
+[[redirects]]
+from = "/api/analyze"
+to = "/.netlify/functions/analyze"
+status = 200
+force = true
+
+# Fallback for SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+[functions]
+node_bundler = "esbuild"
+
+[dev]
+framework = "astro"
+targetPort = 4321
