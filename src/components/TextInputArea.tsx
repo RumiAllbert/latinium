@@ -1,5 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { AnalysisResult } from "../types/AnalysisResult";
 import { analyzeLatin } from "../utils/geminiApi";
+import StreamingAnalysisDisplay from "./StreamingAnalysisDisplay";
+
+// Define the LatinAnalysisError interface
+interface LatinAnalysisError {
+  message: string;
+  code: string;
+  details: Record<string, any>;
+}
+
+// Updated interface for streaming options to match geminiApi implementation
+interface AnalyzeLatinOptions {
+  stream?: boolean;
+  onStreamChunk?: (chunk: string, progress?: number) => void;
+}
+
+// Updated interface for analyzeLatin response
+interface AnalyzeLatinResponse {
+  result: AnalysisResult;
+  isMockData: boolean;
+}
 
 // Hard-coded example texts
 const CAESAR_TEXT =
@@ -49,8 +70,16 @@ function generateMockAnalysis(text: string) {
 
 export default function TextInputArea() {
   const [text, setText] = useState(CAESAR_TEXT);
+  const [loading, setLoading] = useState(false);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [analyzing, setAnalyzing] = useState(false);
   const [charCount, setCharCount] = useState(CAESAR_TEXT.length);
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [streamingChunks, setStreamingChunks] = useState<string[]>([]);
+  const [completionPercentage, setCompletionPercentage] = useState<number>(0);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<LatinAnalysisError | null>(null);
 
   const CHAR_LIMIT = 500;
 
@@ -137,98 +166,170 @@ export default function TextInputArea() {
   };
 
   // Analysis handling functions
-  const updateLoadingState = (isAnalyzing: boolean) => {
-    setAnalyzing(isAnalyzing);
-  };
+  const updateLoadingState = useCallback(
+    (isLoading: boolean, progress?: number) => {
+      setAnalyzing(isLoading);
+      setLoading(isLoading);
+      setInputDisabled(isLoading);
+      if (typeof progress === "number") {
+        setLoadingProgress(progress);
+        setCompletionPercentage(progress);
+      } else if (isLoading) {
+        setLoadingProgress(10);
+        setCompletionPercentage(10);
+      }
+    },
+    []
+  );
 
-  const handleAnalysis = async () => {
-    console.log("Analysis button clicked, text length:", text.length);
-    if (!text.trim()) {
-      console.error("No text to analyze");
-      return;
-    }
+  const resetStreamingState = useCallback(() => {
+    setIsStreaming(false);
+    setStreamingChunks([]);
+    setCompletionPercentage(0);
+  }, []);
 
+  const handleAnalysis = useCallback(async () => {
+    if (!text) return;
+
+    // Reset states at the start of a new analysis
+    setAnalysis(null);
+    setError(null);
     updateLoadingState(true);
-
-    // Make analysis section visible and scroll to it
-    const analysisSection = document.getElementById("analysis-section");
-    if (analysisSection) {
-      analysisSection.classList.remove("analysis-section-hidden");
-      analysisSection.classList.add("analysis-section-visible");
-    }
+    resetStreamingState();
 
     try {
-      // Call the API
-      console.log(
-        "Calling analyzeLatin with text:",
-        text.substring(0, 30) + "..."
-      );
-      const { result, isMockData } = await analyzeLatin(text);
+      const useStreaming = true; // You can make this a user preference toggle
 
-      console.log("Analysis complete", {
-        isMockData,
-        wordCount: result?.words?.length || 0,
-      });
+      if (useStreaming) {
+        setIsStreaming(true);
+        let chunks: string[] = [];
+        let chunkCount = 0;
 
-      // Dispatch event with results
-      dispatchAnalysisEvent(text, result, isMockData);
-    } catch (error) {
-      console.error("Error in analysis:", error);
-      handleAnalysisError(error);
-    } finally {
+        // Define streaming options
+        const streamOptions = {
+          stream: true,
+          onStreamChunk: (chunk: string) => {
+            // Track chunks and estimate progress
+            chunks = [...chunks, chunk];
+            chunkCount++;
+
+            // Estimate progress - assume average of 20 chunks for complete analysis
+            // This is a simplification - ideally we'd get progress from the server
+            const estimatedProgress = Math.min(
+              Math.floor((chunkCount / 20) * 100),
+              95
+            );
+
+            setStreamingChunks(chunks);
+            setCompletionPercentage(estimatedProgress);
+            updateLoadingState(true, estimatedProgress);
+          },
+        };
+
+        // Streaming analytics
+        try {
+          const response = await analyzeLatin(text, streamOptions);
+
+          // When streaming is complete:
+          setIsStreaming(false);
+          setCompletionPercentage(100); // Set to 100% when complete
+
+          if (
+            response &&
+            response.result &&
+            Array.isArray(response.result.words)
+          ) {
+            setAnalysis(response.result);
+            dispatchAnalysisEvent(text, response.result, response.isMockData);
+          } else {
+            throw new Error("Invalid analysis result structure");
+          }
+        } catch (streamError) {
+          console.error("Streaming analysis error:", streamError);
+          setIsStreaming(false);
+          setCompletionPercentage(0);
+          throw streamError; // Rethrow to be handled by the outer catch
+        }
+      } else {
+        // Non-streaming analysis (original functionality)
+        const response = await analyzeLatin(text);
+
+        if (
+          response &&
+          response.result &&
+          Array.isArray(response.result.words)
+        ) {
+          setAnalysis(response.result);
+          dispatchAnalysisEvent(text, response.result, response.isMockData);
+        } else {
+          throw new Error("Invalid analysis result structure");
+        }
+      }
+
       updateLoadingState(false);
+    } catch (e) {
+      console.error("Analysis error:", e);
+      updateLoadingState(false);
+      setIsStreaming(false);
+      setCompletionPercentage(0);
+
+      const errorObj: LatinAnalysisError = {
+        message:
+          typeof e === "string"
+            ? e
+            : e instanceof Error
+            ? e.message
+            : "Unknown error occurred during analysis",
+        code: "ANALYSIS_ERROR",
+        details: { error: String(e) },
+      };
+
+      setError(errorObj);
+
+      // Dispatch error event
+      try {
+        const errorEvent = new CustomEvent("latin-analysis-error", {
+          detail: { error: errorObj.message || "Unknown error" },
+        });
+        window.dispatchEvent(errorEvent);
+      } catch (err) {
+        console.error("Failed to dispatch error event:", err);
+      }
     }
-  };
+  }, [text, updateLoadingState, resetStreamingState]);
 
   // Event dispatching functions
   const dispatchAnalysisEvent = (
     text: string,
-    analysis: any,
+    result: AnalysisResult,
     isMockData: boolean
   ) => {
-    console.log("Dispatching analysis event with data:", {
-      textLength: text.length,
-      analysisWords: analysis?.words?.length || 0,
-      isMockData,
-    });
-
     try {
-      const analysisEvent = new CustomEvent("latin-text-analyzed", {
+      // Make sure the event structure matches what TextAnalysisResult expects
+      const event = new CustomEvent("latin-text-analyzed", {
         detail: {
           text,
-          analysis,
+          analysis: result, // The key must be "analysis" not "result"
           isMockData,
         },
       });
 
-      window.dispatchEvent(analysisEvent);
-      console.log("Analysis event dispatched successfully");
+      console.log("Dispatching analysis event with data:", {
+        textLength: text.length,
+        wordCount: result.words?.length || 0,
+        isMockData,
+      });
+
+      window.dispatchEvent(event);
     } catch (error) {
       console.error("Failed to dispatch analysis event:", error);
-      alert("Failed to deliver analysis results: " + error);
     }
   };
 
-  const handleAnalysisError = (error: unknown) => {
-    console.error("Handling analysis error:", error);
-
-    let message = "Analysis failed";
-    if (error instanceof Error) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
-    }
-
-    try {
-      const errorEvent = new CustomEvent("latin-analysis-error", {
-        detail: { error: message },
-      });
-      window.dispatchEvent(errorEvent);
-    } catch (e) {
-      console.error("Failed to dispatch error event:", e);
-      alert("Analysis failed: " + message);
-    }
-  };
+  const handleStreamingComplete = useCallback(() => {
+    // Animation or UI updates after streaming completes
+    console.log("Streaming analysis complete");
+  }, []);
 
   // Helper function to get character count class
   const getCharCountClass = () => {
@@ -257,6 +358,7 @@ export default function TextInputArea() {
           value={text}
           onChange={handleTextChange}
           maxLength={CHAR_LIMIT}
+          disabled={inputDisabled}
         />
         {/* Character counter */}
         <div className={`char-counter ${getCharCountClass()}`}>
@@ -402,6 +504,23 @@ export default function TextInputArea() {
           More
         </a>
       </div>
+
+      {isStreaming && (
+        <StreamingAnalysisDisplay
+          isActive={isStreaming}
+          chunks={streamingChunks}
+          completionPercentage={completionPercentage}
+          finalResult={analysis}
+          onComplete={handleStreamingComplete}
+        />
+      )}
+
+      {!isStreaming && analysis && (
+        <div>
+          {/* Placeholder for existing analysis display */}
+          <p>Analysis complete. View results below.</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -100,6 +100,15 @@ import TextInputArea from "./TextInputArea";
     box-shadow: 0 0 0 2px rgba(100, 130, 200, 0.2);
   }
 
+  /* New styles for interactive hover relationships */
+  :global(.interactive-latin-text) {
+    background: rgba(30, 40, 60, 0.3);
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -113,5 +122,20 @@ import TextInputArea from "./TextInputArea";
 
   :global(.animate-fade-in) {
     animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  /* Animation for streaming analysis */
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  :global(.streaming-display) {
+    animation: pulse 2s infinite;
   }
 </style>
