@@ -148,52 +148,67 @@ export default function StreamingAnalysisDisplay({
         <div className={`animation-container ${animationState}`}>
           {animationState === "loading" && (
             <>
-              <div className="floating-icons">
-                <div className="floating-icon grammar"></div>
-                <div className="floating-icon syntax"></div>
-                <div className="floating-icon lexicon"></div>
+              <div className="visualizer-container">
+                <div className="pulse-rings"></div>
+                <div className="analyzer-core"></div>
+                <div className="radial-connections">
+                  {[...Array(8)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="connection-line"
+                      style={{
+                        transform: `rotate(${i * 45}deg)`,
+                        animationDelay: `${i * 0.15}s`,
+                      }}
+                    ></div>
+                  ))}
+                </div>
               </div>
 
               <div className="processing-status">
-                <div className="pulse-dot"></div>
+                <div className="status-indicator"></div>
                 <div className="status-text">{currentPhrase}</div>
               </div>
 
-              <div className="word-cloud">
-                {extractedWords.length > 0
-                  ? extractedWords.map((word, index) => (
+              <div className="extracted-content">
+                {extractedWords.length > 0 ? (
+                  <div className="word-grid">
+                    {extractedWords.map((word, index) => (
                       <div
                         key={index}
-                        className="latin-word-bubble"
+                        className="analysis-term"
                         style={{
-                          animationDelay: `${index * 0.2}s`,
-                          opacity: 1 - index * 0.05,
+                          animationDelay: `${index * 0.1}s`,
                         }}
                       >
                         {word}
                       </div>
-                    ))
-                  : // Placeholder bubbles when no words extracted yet
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <div
-                        key={index}
-                        className="latin-word-bubble placeholder"
-                        style={{ animationDelay: `${index * 0.2}s` }}
-                      >
-                        Latin
-                      </div>
                     ))}
+                  </div>
+                ) : (
+                  <div className="processing-placeholder">
+                    <div className="processing-line"></div>
+                    <div className="processing-line"></div>
+                    <div className="processing-line"></div>
+                  </div>
+                )}
               </div>
             </>
           )}
 
           {animationState === "complete" && (
             <div className="completion-message">
-              <div className="success-checkmark">
-                <div className="check-icon">
-                  <span className="icon-line line-tip"></span>
-                  <span className="icon-line line-long"></span>
-                </div>
+              <div className="success-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"
+                    fill="#4CAF50"
+                  />
+                </svg>
               </div>
               <h3 className="title">Analysis Complete</h3>
               <div className="completion-detail">
@@ -204,7 +219,18 @@ export default function StreamingAnalysisDisplay({
 
           {animationState === "error" && (
             <div className="error-message">
-              <div className="error-icon">!</div>
+              <div className="error-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"
+                    fill="#DC3545"
+                  />
+                </svg>
+              </div>
               <h3 className="title">Analysis Error</h3>
               <div className="error-detail">
                 There was a problem analyzing your text. Please try again.
@@ -251,12 +277,13 @@ export default function StreamingAnalysisDisplay({
          }
          
          .progress-bar {
-           height: 6px;
+           height: 4px;
            width: 100%;
-           background: rgba(255, 255, 255, 0.1);
-           border-radius: 8px;
+           background: rgba(255, 255, 255, 0.08);
+           border-radius: 2px;
            overflow: hidden;
            margin-bottom: 0.5rem;
+           position: relative;
          }
          
          .progress-fill {
@@ -265,14 +292,17 @@ export default function StreamingAnalysisDisplay({
              var(--primary-color, #deb887), 
              var(--accent-color, #d4a76a)
            );
-           border-radius: 8px;
+           border-radius: 2px;
            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+           box-shadow: 0 0 8px rgba(222, 184, 135, 0.5);
          }
          
          .progress-text {
            text-align: right;
            font-size: 0.85rem;
            color: rgba(255, 255, 255, 0.7);
+           font-family: monospace;
+           letter-spacing: 1px;
          }
          
          .animation-container {
@@ -289,7 +319,7 @@ export default function StreamingAnalysisDisplay({
          }
          
          .animation-container.loading {
-           animation: pulseBackground 4s infinite;
+           animation: subtleGradient 8s infinite alternate;
          }
          
          .animation-container.complete {
@@ -300,244 +330,258 @@ export default function StreamingAnalysisDisplay({
            background: rgba(45, 28, 28, 0.6);
          }
          
+         /* Modern Visualization */
+         .visualizer-container {
+           position: relative;
+           width: 120px;
+           height: 120px;
+           margin-bottom: 2rem;
+         }
+         
+         .pulse-rings {
+           position: absolute;
+           top: 0;
+           left: 0;
+           right: 0;
+           bottom: 0;
+           border-radius: 50%;
+           box-shadow: 0 0 0 0 rgba(222, 184, 135, 0.5);
+           animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+         }
+         
+         .analyzer-core {
+           position: absolute;
+           width: 40px;
+           height: 40px;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           background: linear-gradient(135deg, 
+             var(--primary-color, #deb887) 0%, 
+             var(--accent-color, #d4a76a) 100%
+           );
+           border-radius: 50%;
+           z-index: 2;
+           box-shadow: 0 0 15px rgba(222, 184, 135, 0.8);
+         }
+         
+         .radial-connections {
+           position: absolute;
+           width: 100%;
+           height: 100%;
+           top: 0;
+           left: 0;
+           z-index: 1;
+         }
+         
+         .connection-line {
+           position: absolute;
+           width: 1px;
+           height: 60px;
+           background: linear-gradient(to top, 
+             var(--primary-color, #deb887) 0%, 
+             transparent 100%
+           );
+           top: 50%;
+           left: 50%;
+           transform-origin: 0 0;
+           opacity: 0.6;
+           animation: pulse-line 2s infinite alternate;
+         }
+         
          .processing-status {
            display: flex;
            align-items: center;
            margin-bottom: 2rem;
          }
          
-         .pulse-dot {
-           width: 12px;
-           height: 12px;
+         .status-indicator {
+           width: 6px;
+           height: 6px;
            background-color: var(--primary-color, #deb887);
-           border-radius: 50%;
            margin-right: 12px;
-           animation: pulse 1.5s infinite;
+           position: relative;
+           animation: blink 1s infinite;
+         }
+         
+         .status-indicator:after {
+           content: '';
+           position: absolute;
+           top: -4px;
+           left: -4px;
+           right: -4px;
+           bottom: -4px;
+           border: 1px solid var(--primary-color, #deb887);
+           opacity: 0.5;
+           border-radius: 50%;
          }
          
          .status-text {
            font-size: 1.1rem;
            font-style: italic;
            color: var(--primary-color, #deb887);
+           font-family: 'Times New Roman', serif;
            animation: fadeInOut 3s infinite;
          }
          
-         .word-cloud {
-           display: flex;
-           flex-wrap: wrap;
-           justify-content: center;
-           gap: 1rem;
+         /* Modern Grid for Extracted Words */
+         .extracted-content {
+           width: 100%;
+           max-width: 500px;
            margin: 0 auto;
-           max-width: 80%;
          }
          
-         .latin-word-bubble {
-           background: rgba(222, 184, 135, 0.15);
-           border: 1px solid rgba(222, 184, 135, 0.3);
-           border-radius: 20px;
-           padding: 0.4rem 1rem;
+         .word-grid {
+           display: grid;
+           grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+           gap: 10px;
+           width: 100%;
+         }
+         
+         .analysis-term {
            font-family: 'Times New Roman', serif;
            color: var(--primary-color, #deb887);
-           font-size: 1rem;
-           animation: float 3s infinite;
+           padding: 8px 10px;
+           font-size: 0.9rem;
+           position: relative;
+           overflow: hidden;
+           background: rgba(222, 184, 135, 0.1);
+           border-left: 2px solid var(--primary-color, #deb887);
+           animation: slideIn 0.5s both;
            transition: all 0.3s ease;
          }
          
-         .latin-word-bubble:hover {
-           background: rgba(222, 184, 135, 0.25);
-           transform: translateY(-5px);
+         .analysis-term:hover {
+           background: rgba(222, 184, 135, 0.2);
+           transform: translateX(3px);
          }
          
-         .latin-word-bubble.placeholder {
-           opacity: 0.5;
-           font-style: italic;
-         }
-         
-         .floating-icons {
-           position: absolute;
+         .processing-placeholder {
            width: 100%;
-           height: 100%;
-           top: 0;
-           left: 0;
-           pointer-events: none;
+           padding: 1rem;
          }
          
-         .floating-icon {
-           position: absolute;
-           width: 32px;
-           height: 32px;
-           border-radius: 50%;
-           opacity: 0.6;
-           animation: floatAround 8s infinite linear;
-         }
-         
-         .floating-icon.grammar {
-           background: rgba(173, 216, 230, 0.3);
-           top: 15%;
-           left: 20%;
-           animation-delay: 0s;
-         }
-         
-         .floating-icon.syntax {
-           background: rgba(144, 238, 144, 0.3);
-           bottom: 25%;
-           right: 15%;
-           animation-delay: 2s;
-         }
-         
-         .floating-icon.lexicon {
-           background: rgba(255, 182, 193, 0.3);
-           bottom: 15%;
-           left: 30%;
-           animation-delay: 4s;
-         }
-         
-         .completion-message {
-           text-align: center;
-           animation: fadeIn 1s;
-         }
-         
-         .success-checkmark {
-           width: 80px;
-           height: 80px;
-           margin: 0 auto 1.5rem auto;
-         }
-         
-         .check-icon {
-           width: 80px;
-           height: 80px;
-           position: relative;
-           border-radius: 50%;
-           box-sizing: content-box;
-           border: 4px solid #4CAF50;
-         }
-         
-         .check-icon::before {
-           top: 3px;
-           left: -2px;
-           width: 30px;
-           transform-origin: 100% 50%;
-           border-radius: 100px 0 0 100px;
-         }
-         
-         .check-icon::after {
-           top: 0;
-           left: 30px;
-           width: 60px;
-           transform-origin: 0 50%;
-           border-radius: 0 100px 100px 0;
-           animation: rotate-circle 4.25s ease-in;
-         }
-         
-         .check-icon::before, .check-icon::after {
-           content: '';
-           height: 100px;
-           position: absolute;
-           background: transparent;
-           transform: rotate(-45deg);
-         }
-         
-         .check-icon .icon-line {
-           height: 5px;
-           background-color: #4CAF50;
-           display: block;
+         .processing-line {
+           height: 12px;
+           background: rgba(255, 255, 255, 0.05);
            border-radius: 2px;
-           position: absolute;
-           z-index: 10;
+           margin-bottom: 12px;
+           animation: pulse-width 2s infinite alternate;
          }
          
-         .check-icon .icon-line.line-tip {
-           top: 46px;
-           left: 14px;
-           width: 25px;
-           transform: rotate(45deg);
-           animation: icon-line-tip 0.75s;
+         .processing-line:nth-child(2) {
+           animation-delay: 0.5s;
+           width: 85%;
          }
          
-         .check-icon .icon-line.line-long {
-           top: 38px;
-           right: 8px;
-           width: 47px;
-           transform: rotate(-45deg);
-           animation: icon-line-long 0.75s;
+         .processing-line:nth-child(3) {
+           animation-delay: 1s;
+           width: 60%;
          }
          
-         .completion-detail {
-           color: rgba(255, 255, 255, 0.7);
-           font-size: 0.9rem;
-           margin-top: 1rem;
-         }
-         
-         .error-message {
+         /* Success/Error States */
+         .completion-message, .error-message {
            text-align: center;
            animation: fadeIn 1s;
          }
          
-         .error-icon {
-           width: 60px;
-           height: 60px;
-           line-height: 60px;
-           border-radius: 50%;
-           font-size: 30px;
-           font-weight: bold;
+         .success-icon, .error-icon {
+           width: 64px;
+           height: 64px;
            margin: 0 auto 1.5rem auto;
-           background: rgba(220, 53, 69, 0.8);
-           color: white;
          }
          
-         .error-detail {
+         .completion-detail, .error-detail {
            color: rgba(255, 255, 255, 0.7);
            font-size: 0.9rem;
            margin-top: 1rem;
+           max-width: 300px;
+           margin-left: auto;
+           margin-right: auto;
          }
          
-         @keyframes pulse {
-           0% { transform: scale(0.95); opacity: 0.7; }
-           50% { transform: scale(1.05); opacity: 1; }
-           100% { transform: scale(0.95); opacity: 0.7; }
+         /* Animations */
+         @keyframes pulse-ring {
+           0% {
+             box-shadow: 0 0 0 0 rgba(222, 184, 135, 0.5);
+           }
+           70% {
+             box-shadow: 0 0 0 40px rgba(222, 184, 135, 0);
+           }
+           100% {
+             box-shadow: 0 0 0 0 rgba(222, 184, 135, 0);
+           }
+         }
+         
+         @keyframes pulse-line {
+           0% {
+             opacity: 0.2;
+             height: 40px;
+           }
+           100% {
+             opacity: 0.6;
+             height: 60px;
+           }
+         }
+         
+         @keyframes blink {
+           0%, 100% {
+             opacity: 1;
+           }
+           50% {
+             opacity: 0.3;
+           }
          }
          
          @keyframes fadeInOut {
-           0%, 100% { opacity: 0.7; }
-           50% { opacity: 1; }
+           0%, 100% {
+             opacity: 0.7;
+           }
+           50% {
+             opacity: 1;
+           }
          }
          
-         @keyframes float {
-           0%, 100% { transform: translateY(0); }
-           50% { transform: translateY(-8px); }
+         @keyframes subtleGradient {
+           0% {
+             background: rgba(20, 27, 43, 0.7);
+           }
+           100% {
+             background: rgba(25, 35, 55, 0.7);
+           }
          }
          
-         @keyframes floatAround {
-           0% { transform: translate(0, 0) rotate(0deg); }
-           25% { transform: translate(20px, 15px) rotate(90deg); }
-           50% { transform: translate(0, 30px) rotate(180deg); }
-           75% { transform: translate(-20px, 15px) rotate(270deg); }
-           100% { transform: translate(0, 0) rotate(360deg); }
+         @keyframes slideIn {
+           from {
+             transform: translateY(20px);
+             opacity: 0;
+           }
+           to {
+             transform: translateY(0);
+             opacity: 1;
+           }
+         }
+         
+         @keyframes pulse-width {
+           from {
+             width: 40%;
+             opacity: 0.3;
+           }
+           to {
+             width: 100%;
+             opacity: 0.5;
+           }
          }
          
          @keyframes fadeIn {
-           from { opacity: 0; transform: translateY(20px); }
-           to { opacity: 1; transform: translateY(0); }
-         }
-         
-         @keyframes pulseBackground {
-           0%, 100% { background: rgba(20, 27, 43, 0.7); }
-           50% { background: rgba(25, 33, 52, 0.7); }
-         }
-         
-         @keyframes icon-line-tip {
-           0% { width: 0; left: 1px; top: 19px; }
-           54% { width: 0; left: 1px; top: 19px; }
-           70% { width: 50px; left: -8px; top: 37px; }
-           84% { width: 17px; left: 21px; top: 48px; }
-           100% { width: 25px; left: 14px; top: 46px; }
-         }
-         
-         @keyframes icon-line-long {
-           0% { width: 0; right: 46px; top: 54px; }
-           65% { width: 0; right: 46px; top: 54px; }
-           84% { width: 55px; right: 0px; top: 35px; }
-           100% { width: 47px; right: 8px; top: 38px; }
+           from {
+             opacity: 0;
+             transform: translateY(20px);
+           }
+           to {
+             opacity: 1;
+             transform: translateY(0);
+           }
          }
         `}
       </style>

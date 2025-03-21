@@ -199,7 +199,6 @@ export default function TextInputArea() {
 
     try {
       const useStreaming = true; // You can make this a user preference toggle
-
       if (useStreaming) {
         setIsStreaming(true);
         let chunks: string[] = [];
