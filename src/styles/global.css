@@ -47,15 +47,16 @@
 
 /* Highlighting styles for Latin text analysis */
 .highlight-noun {
-  @apply text-primary-300 relative;
+  @apply relative;
 }
 
 .highlight-verb {
-  @apply text-secondary-300 relative;
+  @apply text-red-400 relative;
+  /* Verbs are always colored red per user request */
 }
 
 .highlight-adjective {
-  @apply text-amber-300 relative;
+  @apply relative;
 }
 
 .highlight-adverb {
@@ -71,7 +72,32 @@
 }
 
 .highlight-pronoun {
-  @apply text-orange-300 relative;
+  @apply relative;
+}
+
+/* Latin case-based coloring */
+.case-nominative {
+  @apply text-sky-300;
+}
+
+.case-accusative {
+  @apply text-amber-300;
+}
+
+.case-genitive {
+  @apply text-purple-300;
+}
+
+.case-dative {
+  @apply text-emerald-300;
+}
+
+.case-ablative {
+  @apply text-pink-300;
+}
+
+.case-vocative {
+  @apply text-indigo-300;
 }
 
 /* Relationship arrows and effects */

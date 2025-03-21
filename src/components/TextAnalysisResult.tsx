@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import InteractiveWordRelationships from "./InteractiveWordRelationships";
 
 // Fallback mock data in case API integration fails
 const mockAnalysisData = {
@@ -90,6 +91,15 @@ export default function TextAnalysisResult() {
   const [hoveredWordIndex, setHoveredWordIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState<boolean>(false);
+  const [visiblePartsOfSpeech, setVisiblePartsOfSpeech] = useState<string[]>([
+    "noun",
+    "verb",
+    "adjective",
+    "adverb",
+    "preposition",
+    "conjunction",
+    "pronoun",
+  ]);
   const [visibleRelationTypes, setVisibleRelationTypes] = useState<string[]>([
     "subject",
     "object",
@@ -103,6 +113,10 @@ export default function TextAnalysisResult() {
     targetIndex: number;
     type: string;
   } | null>(null);
+  const [useInteractiveView, setUseInteractiveView] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<"words" | "relationships">(
+    "words"
+  );
 
   useEffect(() => {
     console.log("TextAnalysisResult component mounted");
@@ -300,6 +314,18 @@ export default function TextAnalysisResult() {
     "words"
   );
 
+  // Function to toggle part of speech visibility
+  const togglePartOfSpeech = (partOfSpeech: string) => {
+    if (visiblePartsOfSpeech.includes(partOfSpeech)) {
+      setVisiblePartsOfSpeech(
+        visiblePartsOfSpeech.filter((p) => p !== partOfSpeech)
+      );
+    } else {
+      setVisiblePartsOfSpeech([...visiblePartsOfSpeech, partOfSpeech]);
+    }
+  };
+
+  // Function to get word class name based on case and part of speech
   const getWordClassName = (word: any, index: number) => {
     const baseClass =
       "word inline-block relative cursor-pointer p-1 rounded hover:bg-white/10";
@@ -331,33 +357,58 @@ export default function TextAnalysisResult() {
       }
     }
 
-    // Word type highlighting
-    let typeClass = "";
-    switch (word.partOfSpeech) {
-      case "noun":
-        typeClass = `highlight-noun`;
-        break;
-      case "verb":
-        typeClass = `highlight-verb`;
-        break;
-      case "adjective":
-        typeClass = `highlight-adjective`;
-        break;
-      case "adverb":
-        typeClass = `highlight-adverb`;
-        break;
-      case "preposition":
-        typeClass = `highlight-preposition`;
-        break;
-      case "conjunction":
-        typeClass = `highlight-conjunction`;
-        break;
-      case "pronoun":
-        typeClass = `highlight-pronoun`;
-        break;
+    // Part of speech filtering - hide words that aren't in the visible parts list
+    const isVisible = visiblePartsOfSpeech.includes(
+      word.partOfSpeech?.toLowerCase() || "unknown"
+    );
+    if (!isVisible) {
+      return `${baseClass} opacity-30 ${relatedClass}`;
     }
 
-    return `${baseClass} ${typeClass} ${relatedClass}`.trim();
+    // Case-based coloring (for nouns, adjectives, pronouns)
+    let caseClass = "";
+    if (word.morphology && word.morphology.case) {
+      switch (word.morphology.case.toLowerCase()) {
+        case "nominative":
+          caseClass = "text-blue-300"; // Blue for nominative (subject)
+          break;
+        case "accusative":
+          caseClass = "text-amber-300"; // Amber for accusative (direct object)
+          break;
+        case "genitive":
+          caseClass = "text-green-300"; // Green for genitive (possession)
+          break;
+        case "dative":
+          caseClass = "text-purple-300"; // Purple for dative (indirect object)
+          break;
+        case "ablative":
+          caseClass = "text-rose-300"; // Rose for ablative (by/with/from)
+          break;
+        case "vocative":
+          caseClass = "text-cyan-300"; // Cyan for vocative (direct address)
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Special handling for verbs - always red
+    if (word.partOfSpeech?.toLowerCase() === "verb") {
+      caseClass = "text-red-400 font-medium"; // Verbs are always red and bold
+    }
+
+    // Apply default colors for parts of speech without case
+    if (!caseClass) {
+      if (word.partOfSpeech?.toLowerCase() === "adverb") {
+        caseClass = "text-lime-300"; // Lime for adverbs
+      } else if (word.partOfSpeech?.toLowerCase() === "preposition") {
+        caseClass = "text-gray-300"; // Gray for prepositions
+      } else if (word.partOfSpeech?.toLowerCase() === "conjunction") {
+        caseClass = "text-orange-300"; // Orange for conjunctions
+      }
+    }
+
+    return `${baseClass} ${caseClass} ${relatedClass}`.trim();
   };
 
   const renderWordInfo = (word: any) => {
@@ -515,30 +566,24 @@ export default function TextAnalysisResult() {
       return visibleRelationTypes.includes("other"); // For any other types
     };
 
-    // Function to get relationship type class
-    const getRelationTypeClass = (relType: string): string => {
-      if (relType.includes("subject")) return "verb-subject";
-      if (relType.includes("object")) return "verb-object";
-      if (relType.includes("adjective")) return "adjective-noun";
-      if (relType.includes("adverb")) return "adverb-verb";
-      return "relation-label";
+    // Toggle between interactive and traditional visualization
+    const toggleVisualizationMode = () => {
+      setUseInteractiveView(!useInteractiveView);
+      // Reset selection when switching modes
+      setSelectedWordIndex(null);
+      setHighlightedRelationship(null);
     };
 
-    // Function to get a short explanation of the relationship type
-    const getRelationshipExplanation = (relType: string): string => {
-      if (relType.includes("subject-verb"))
-        return "Subject of the verb (nominative)";
-      if (relType.includes("verb-subject")) return "Verb with this subject";
-      if (relType.includes("object")) return "Direct object (accusative)";
-      if (relType.includes("adjective-noun"))
-        return "Adjective modifying the noun";
-      if (relType.includes("adverb-verb")) return "Adverb modifying the verb";
-      if (relType.includes("genitive"))
-        return "Possessive relationship (genitive)";
-      if (relType.includes("dative")) return "Indirect object (dative)";
-      if (relType.includes("ablative"))
-        return "Means, manner, or place (ablative)";
-      return "Grammatical relationship";
+    // Function to handle word hover for interactive mode
+    const handleWordHover = (index: number | null) => {
+      if (!focusModeEnabled) {
+        setSelectedWordIndex(index);
+      }
+    };
+
+    // Function to handle word click for interactive mode
+    const handleWordClick = (index: number) => {
+      setSelectedWordIndex(index === selectedWordIndex ? null : index);
     };
 
     // Organize words hierarchically based on their grammatical relationships
@@ -759,246 +804,350 @@ export default function TextAnalysisResult() {
       );
     };
 
+    // Function to get relationship type class
+    const getRelationTypeClass = (relType: string): string => {
+      if (relType.includes("subject")) return "verb-subject";
+      if (relType.includes("object")) return "verb-object";
+      if (relType.includes("adjective")) return "adjective-noun";
+      if (relType.includes("adverb")) return "adverb-verb";
+      return "relation-label";
+    };
+
+    // Function to get a short explanation of the relationship type
+    const getRelationshipExplanation = (relType: string): string => {
+      if (relType.includes("subject-verb"))
+        return "Subject of the verb (nominative)";
+      if (relType.includes("verb-subject")) return "Verb with this subject";
+      if (relType.includes("object")) return "Direct object (accusative)";
+      if (relType.includes("adjective-noun"))
+        return "Adjective modifying the noun";
+      if (relType.includes("adverb-verb")) return "Adverb modifying the verb";
+      if (relType.includes("genitive"))
+        return "Possessive relationship (genitive)";
+      if (relType.includes("dative")) return "Indirect object (dative)";
+      if (relType.includes("ablative"))
+        return "Means, manner, or place (ablative)";
+      return "Grammatical relationship";
+    };
+
     return (
       <div className="p-4">
         {/* Controls for relationship view */}
         <div className="mb-4 flex flex-col gap-3">
           {/* Filter controls for relationship types */}
-          <div className="glass-panel p-3">
-            <div className="flex items-center flex-wrap gap-2">
-              <span className="text-white/70 text-sm mr-2">
-                Show relationships:
-              </span>
-              <button
-                className={`px-2 py-1 text-xs rounded-lg ${
-                  visibleRelationTypes.includes("subject")
-                    ? "bg-secondary-500/30 text-secondary-200 border border-secondary-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => toggleRelationshipType("subject")}
-              >
-                Subject-Verb
-              </button>
-              <button
-                className={`px-2 py-1 text-xs rounded-lg ${
-                  visibleRelationTypes.includes("object")
-                    ? "bg-primary-500/30 text-primary-200 border border-primary-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => toggleRelationshipType("object")}
-              >
-                Verb-Object
-              </button>
-              <button
-                className={`px-2 py-1 text-xs rounded-lg ${
-                  visibleRelationTypes.includes("adjective")
-                    ? "bg-amber-500/30 text-amber-200 border border-amber-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => toggleRelationshipType("adjective")}
-              >
-                Adjective-Noun
-              </button>
-              <button
-                className={`px-2 py-1 text-xs rounded-lg ${
-                  visibleRelationTypes.includes("adverb")
-                    ? "bg-lime-500/30 text-lime-200 border border-lime-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => toggleRelationshipType("adverb")}
-              >
-                Adverb-Verb
-              </button>
-              <button
-                className={`px-2 py-1 text-xs rounded-lg ${
-                  visibleRelationTypes.includes("other")
-                    ? "bg-gray-500/30 text-gray-200 border border-gray-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => toggleRelationshipType("other")}
-              >
-                Other
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-white/80 font-medium mr-1">
+              Show relationships:
+            </span>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visibleRelationTypes.includes("subject")
+                  ? "bg-purple-300 text-gray-900 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => toggleRelationshipType("subject")}
+              title="Toggle subject relationships"
+            >
+              Subjects
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visibleRelationTypes.includes("object")
+                  ? "bg-blue-300 text-gray-900 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => toggleRelationshipType("object")}
+              title="Toggle object relationships"
+            >
+              Objects
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visibleRelationTypes.includes("adjective")
+                  ? "bg-amber-300 text-gray-900 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => toggleRelationshipType("adjective")}
+              title="Toggle adjective relationships"
+            >
+              Adjectives
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visibleRelationTypes.includes("adverb")
+                  ? "bg-lime-300 text-gray-900 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => toggleRelationshipType("adverb")}
+              title="Toggle adverb relationships"
+            >
+              Adverbs
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visibleRelationTypes.includes("other")
+                  ? "bg-gray-300 text-gray-900 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => toggleRelationshipType("other")}
+              title="Toggle other relationships"
+            >
+              Other
+            </button>
           </div>
 
-          {/* Focus mode toggle and explanation */}
-          <div className="glass-panel p-3 flex justify-between items-center">
-            <div className="flex items-center">
-              <button
-                className={`mr-3 p-1.5 rounded-lg ${
-                  focusModeEnabled
-                    ? "bg-secondary-600/50 text-white border border-secondary-400/50"
-                    : "bg-white/10 text-white/50"
-                }`}
-                onClick={() => setFocusModeEnabled(!focusModeEnabled)}
-                title={
-                  focusModeEnabled ? "Disable focus mode" : "Enable focus mode"
-                }
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  {focusModeEnabled ? (
-                    <path d="M5 8a1 1 0 011-1h1V6a1 1 0 012 0v1h1a1 1 0 110 2H9v1a1 1 0 11-2 0V9H6a1 1 0 01-1-1z" />
-                  ) : (
-                    <path
-                      d="M5 8h10M5 12h10"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                    />
-                  )}
-                </svg>
-              </button>
-              <div>
-                <p className="text-sm text-white/80 font-medium">
-                  {focusModeEnabled
-                    ? "Focus Mode: ON - Click a word to focus on its relationships"
-                    : "Focus Mode: OFF - All relationships visible"}
-                </p>
-                <p className="text-xs text-white/60">
-                  {selectedWordIndex !== null && focusModeEnabled
-                    ? `Currently focused on: ${analysisData.words[selectedWordIndex].word}`
-                    : "Select a word to focus on its specific relationships"}
-                </p>
-              </div>
-            </div>
-
-            <div className="text-xs text-white/60 italic">
-              Tip: Hover over a line to see relationship details
-            </div>
+          {/* Focus mode toggle */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="focus-mode"
+              checked={focusModeEnabled}
+              onChange={(e) => setFocusModeEnabled(e.target.checked)}
+              className="w-4 h-4 accent-yellow-400/80"
+            />
+            <label
+              htmlFor="focus-mode"
+              className="text-sm text-white/80 cursor-pointer"
+            >
+              Focus Mode
+            </label>
+            <span className="text-xs text-white/50 italic ml-1">
+              (highlight related words when selected)
+            </span>
           </div>
+
+          {/* Toggle between traditional and interactive view */}
+          {useInteractiveView ? (
+            <button
+              className="self-end text-sm text-white/80 bg-gray-700/50 hover:bg-gray-700/80 px-4 py-1.5 rounded-md transition-colors"
+              onClick={() => setUseInteractiveView(false)}
+            >
+              Switch to Traditional View
+            </button>
+          ) : (
+            <button
+              className="self-end text-sm text-white/80 bg-gray-700/50 hover:bg-gray-700/80 px-4 py-1.5 rounded-md transition-colors"
+              onClick={() => setUseInteractiveView(true)}
+            >
+              Switch to Interactive View
+            </button>
+          )}
         </div>
 
-        <div className="glass-panel p-4 overflow-x-auto">
-          <div
-            className="min-w-full relative"
-            style={{ minHeight: "600px", padding: "20px 0" }}
-          >
-            {/* Draw lines between related words */}
-            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
-              <defs>
-                {/* Define arrowhead markers for relationship directions */}
-                <marker
-                  id="arrowhead-verb"
-                  markerWidth="10"
-                  markerHeight="7"
-                  refX="9"
-                  refY="3.5"
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#c4b5fd" />
-                </marker>
-                <marker
-                  id="arrowhead-noun"
-                  markerWidth="10"
-                  markerHeight="7"
-                  refX="9"
-                  refY="3.5"
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#93c5fd" />
-                </marker>
-                <marker
-                  id="arrowhead-adjective"
-                  markerWidth="10"
-                  markerHeight="7"
-                  refX="9"
-                  refY="3.5"
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#fcd34d" />
-                </marker>
-                <marker
-                  id="arrowhead-adverb"
-                  markerWidth="10"
-                  markerHeight="7"
-                  refX="9"
-                  refY="3.5"
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#a3e635" />
-                </marker>
+        {/* Relationship visualization */}
+        {useInteractiveView ? (
+          <div className="p-4 bg-gray-800/50 rounded-lg border border-white/10">
+            {selectedWordIndex !== null && (
+              <div className="mb-4 p-3 bg-gray-700/50 rounded-lg border border-white/10">
+                <h3 className="text-white font-medium">
+                  Selected Word: {analysisData.words[selectedWordIndex].word}
+                </h3>
+                <p className="text-white/80 text-sm">
+                  is • {analysisData.words[selectedWordIndex].partOfSpeech}
+                </p>
+              </div>
+            )}
 
-                {/* Filter for shadow effect */}
-                <filter
-                  id="shadow"
-                  x="-20%"
-                  y="-20%"
-                  width="140%"
-                  height="140%"
+            <InteractiveWordRelationships
+              words={analysisData.words}
+              activeWordIndex={selectedWordIndex}
+              onWordClick={(index) => setSelectedWordIndex(index)}
+              onWordHover={(index) => {
+                // Optional hover behavior
+              }}
+            />
+          </div>
+        ) : (
+          <div className="relative">
+            <div
+              className="relationship-viz"
+              style={{
+                width: "100%",
+                height: "600px",
+                overflow: "hidden",
+                position: "relative",
+                backgroundColor: "rgb(30, 41, 59, 0.5)",
+                borderRadius: "0.5rem",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <svg
+                width="100%"
+                height="100%"
+                className="relationship-svg"
+                onClick={(e) => {
+                  // Clear selection on background click
+                  if (e.target === e.currentTarget) {
+                    setSelectedWordIndex(null);
+                    setHighlightedRelationship(null);
+                  }
+                }}
+              >
+                {/* SVG Definitions for markers, filters and patterns */}
+                <defs>
+                  {/* Drop shadow filter */}
+                  <filter
+                    id="shadow"
+                    x="-20%"
+                    y="-20%"
+                    width="140%"
+                    height="140%"
+                  >
+                    <feDropShadow
+                      dx="0"
+                      dy="0"
+                      stdDeviation="3"
+                      floodColor="rgba(255,255,255,0.3)"
+                      floodOpacity="0.5"
+                    />
+                  </filter>
+
+                  {/* Glow filter for highlighted nodes */}
+                  <filter
+                    id="glow"
+                    x="-30%"
+                    y="-30%"
+                    width="160%"
+                    height="160%"
+                  >
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite
+                      in="SourceGraphic"
+                      in2="blur"
+                      operator="over"
+                    />
+                  </filter>
+
+                  {/* Improved arrowheads for different relationship types */}
+                  <marker
+                    id="arrowhead-verb"
+                    viewBox="0 0 12 12"
+                    refX="9"
+                    refY="6"
+                    markerWidth="8"
+                    markerHeight="8"
+                    orient="auto"
+                  >
+                    <path
+                      d="M 0 0 L 12 6 L 0 12 L 4 6 Z"
+                      fill="#c4b5fd"
+                      stroke="#c4b5fd"
+                      strokeWidth="0.5"
+                    />
+                  </marker>
+
+                  <marker
+                    id="arrowhead-noun"
+                    viewBox="0 0 12 12"
+                    refX="9"
+                    refY="6"
+                    markerWidth="8"
+                    markerHeight="8"
+                    orient="auto"
+                  >
+                    <path
+                      d="M 0 0 L 12 6 L 0 12 L 4 6 Z"
+                      fill="#93c5fd"
+                      stroke="#93c5fd"
+                      strokeWidth="0.5"
+                    />
+                  </marker>
+
+                  <marker
+                    id="arrowhead-adjective"
+                    viewBox="0 0 12 12"
+                    refX="9"
+                    refY="6"
+                    markerWidth="8"
+                    markerHeight="8"
+                    orient="auto"
+                  >
+                    <path
+                      d="M 0 0 L 12 6 L 0 12 L 4 6 Z"
+                      fill="#fcd34d"
+                      stroke="#fcd34d"
+                      strokeWidth="0.5"
+                    />
+                  </marker>
+
+                  <marker
+                    id="arrowhead-adverb"
+                    viewBox="0 0 12 12"
+                    refX="9"
+                    refY="6"
+                    markerWidth="8"
+                    markerHeight="8"
+                    orient="auto"
+                  >
+                    <path
+                      d="M 0 0 L 12 6 L 0 12 L 4 6 Z"
+                      fill="#a3e635"
+                      stroke="#a3e635"
+                      strokeWidth="0.5"
+                    />
+                  </marker>
+                </defs>
+
+                {/* Background grid pattern */}
+                <pattern
+                  id="grid"
+                  width="20"
+                  height="20"
+                  patternUnits="userSpaceOnUse"
                 >
-                  <feDropShadow
-                    dx="0"
-                    dy="0"
-                    stdDeviation="3"
-                    floodColor="#000"
-                    floodOpacity="0.3"
+                  <path
+                    d="M 20 0 L 0 0 0 20"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.03)"
+                    strokeWidth="1"
                   />
-                </filter>
-              </defs>
+                </pattern>
+                <rect
+                  width="100%"
+                  height="100%"
+                  fill="url(#grid)"
+                  onClick={() => {
+                    setSelectedWordIndex(null);
+                    setHighlightedRelationship(null);
+                  }}
+                />
 
-              {analysisData.words.flatMap((word: any, wordIndex: number) =>
-                word.relationships
-                  .filter((rel) => isRelationshipVisible(rel.type))
-                  .map((rel: any, relIndex: number) => {
-                    // Skip if in focus mode and neither word is in the focused set
+                {/* Draw relationship connections */}
+                {analysisData.words.flatMap((word, wordIndex) =>
+                  word.relationships?.map((rel, relIndex) => {
                     if (
-                      focusModeEnabled &&
-                      selectedWordIndex !== null &&
-                      !relatedNodeIds.has(wordIndex) &&
-                      !relatedNodeIds.has(rel.relatedWordIndex)
+                      rel.relatedWordIndex === undefined ||
+                      !visibleRelationTypes.some((type) =>
+                        rel.type.toLowerCase().includes(type.toLowerCase())
+                      )
                     ) {
                       return null;
                     }
 
-                    const sourcePosition = wordPositions.find(
-                      (p) => p.id === wordIndex
-                    );
-                    const targetPosition = wordPositions.find(
-                      (p) => p.id === rel.relatedWordIndex
-                    );
+                    const sourceNode = wordPositions[wordIndex];
+                    const targetNode = wordPositions[rel.relatedWordIndex];
 
-                    if (!sourcePosition || !targetPosition) return null;
-
-                    const sourceX = sourcePosition.x;
-                    const sourceY = sourcePosition.y;
-                    const targetX = targetPosition.x;
-                    const targetY = targetPosition.y;
-
-                    // Calculate path attributes
-                    const isUpward = targetY < sourceY;
-                    const isDownward = targetY > sourceY;
-                    const isHorizontal = Math.abs(targetY - sourceY) < 30;
-
-                    // Create appropriate path based on direction
-                    let path = "";
-                    if (isHorizontal) {
-                      // Horizontal relationship (same level) - simple curve
-                      const midY = (sourceY + targetY) / 2;
-                      const controlY = midY - 20; // Curve slightly upward
-                      path = `M ${sourceX} ${sourceY} Q ${
-                        (sourceX + targetX) / 2
-                      } ${controlY}, ${targetX} ${targetY}`;
-                    } else if (isUpward) {
-                      // Upward relationship (child to parent) - steeper curve
-                      const dx = targetX - sourceX;
-                      const dy = targetY - sourceY;
-                      // Create an S-curve
-                      path = `M ${sourceX} ${sourceY} C ${sourceX} ${
-                        sourceY - 30
-                      }, ${targetX} ${targetY + 30}, ${targetX} ${targetY}`;
-                    } else {
-                      // Downward relationship (parent to child) - standard curve
-                      const midX = (sourceX + targetX) / 2;
-                      path = `M ${sourceX} ${sourceY} C ${sourceX} ${
-                        sourceY + 50
-                      }, ${targetX} ${targetY - 50}, ${targetX} ${targetY}`;
+                    if (!sourceNode || !targetNode) {
+                      return null;
                     }
+
+                    const sourceX = sourceNode.x;
+                    const sourceY = sourceNode.y;
+                    const targetX = targetNode.x;
+                    const targetY = targetNode.y;
+
+                    // Calculate path with curved lines
+                    const dx = targetX - sourceX;
+                    const dy = targetY - sourceY;
+                    const dr = Math.sqrt(dx * dx + dy * dy);
+
+                    // Make the arc more pronounced for better readability
+                    const arcFactor = 1.5;
+
+                    // Create a curved path with larger radius for better visibility
+                    const path = `M ${sourceX} ${sourceY} A ${dr * arcFactor} ${
+                      dr * arcFactor
+                    } 0 0 1 ${targetX} ${targetY}`;
 
                     // Determine styling based on relationship type
                     let color = "";
@@ -1009,24 +1158,27 @@ export default function TextAnalysisResult() {
                     if (rel.type.includes("subject")) {
                       color = "#c4b5fd"; // Purple for subject relationships
                       dashArray = "";
-                      strokeWidth = 2.5;
+                      strokeWidth = 3.5; // Increased thickness
                       arrowMarker = "url(#arrowhead-verb)";
                     } else if (rel.type.includes("object")) {
                       color = "#93c5fd"; // Blue for object relationships
                       dashArray = "";
-                      strokeWidth = 2.5;
+                      strokeWidth = 3.5; // Increased thickness
                       arrowMarker = "url(#arrowhead-noun)";
                     } else if (rel.type.includes("adjective")) {
                       color = "#fcd34d"; // Amber for adjective relationships
                       dashArray = "5,3";
+                      strokeWidth = 3.5; // Increased thickness
                       arrowMarker = "url(#arrowhead-adjective)";
                     } else if (rel.type.includes("adverb")) {
                       color = "#a3e635"; // Lime for adverb relationships
                       dashArray = "5,3";
+                      strokeWidth = 3.5; // Increased thickness
                       arrowMarker = "url(#arrowhead-adverb)";
                     } else {
                       color = "#e5e7eb"; // Gray for other relationships
                       dashArray = "3,2";
+                      strokeWidth = 3; // Increased thickness
                     }
 
                     // Check if relationship is dimmed in focus mode
@@ -1038,7 +1190,7 @@ export default function TextAnalysisResult() {
                         relatedNodeIds.has(rel.relatedWordIndex)
                       )
                         ? 0.2
-                        : 0.8;
+                        : 0.9; // Increased opacity for better visibility
 
                     // Check if this relationship is highlighted
                     const isHighlighted = isRelationshipHighlighted(
@@ -1094,7 +1246,7 @@ export default function TextAnalysisResult() {
                           fill="none"
                           stroke={color}
                           strokeWidth={
-                            isHighlighted ? strokeWidth + 1 : strokeWidth
+                            isHighlighted ? strokeWidth + 1.5 : strokeWidth
                           }
                           strokeDasharray={dashArray}
                           markerEnd={arrowMarker}
@@ -1102,11 +1254,25 @@ export default function TextAnalysisResult() {
                           style={{
                             opacity,
                             transition: "all 0.3s ease",
-                            filter: isHighlighted ? "url(#shadow)" : "none",
+                            filter: isHighlighted
+                              ? "url(#shadow)"
+                              : "drop-shadow(0 0 2px rgba(0,0,0,0.5))",
                           }}
                         />
 
-                        {/* Path for text attachment */}
+                        {/* Path for text attachment - Add background for better readability */}
+                        {isHighlighted && (
+                          <path
+                            d={path}
+                            id={`text-path-bg-${wordIndex}-${relIndex}`}
+                            fill="none"
+                            stroke="rgba(20, 25, 40, 0.85)"
+                            strokeWidth={14}
+                            className="pointer-events-none"
+                            strokeLinecap="round"
+                          />
+                        )}
+
                         <path
                           id={`text-path-${wordIndex}-${relIndex}`}
                           d={path}
@@ -1118,14 +1284,17 @@ export default function TextAnalysisResult() {
                         {/* Relationship type label */}
                         <text
                           className="relationship-text pointer-events-none"
-                          style={{ opacity: isHighlighted ? 1 : opacity + 0.1 }}
+                          style={{
+                            opacity: isHighlighted ? 1 : opacity + 0.1,
+                            fontWeight: isHighlighted ? "bold" : "normal",
+                          }}
                         >
                           <textPath
                             href={`#text-path-${wordIndex}-${relIndex}`}
                             startOffset="50%"
                             textAnchor="middle"
-                            fill="white"
-                            fontSize="10"
+                            fill={isHighlighted ? "white" : color}
+                            fontSize={isHighlighted ? "12" : "10"}
                           >
                             <tspan className={getRelationTypeClass(rel.type)}>
                               {rel.type}
@@ -1143,16 +1312,16 @@ export default function TextAnalysisResult() {
                             className="pointer-events-none"
                           >
                             <div
-                              className="bg-gray-800/90 p-2 rounded-md shadow-lg border border-white/10 text-xs text-white"
+                              className="bg-gray-800/90 p-3 rounded-md shadow-lg border border-white/20 text-sm text-white"
                               style={{ backdropFilter: "blur(4px)" }}
                             >
-                              <div className="font-medium text-sm mb-1">
+                              <div className="font-medium text-base mb-1">
                                 {rel.type}
                               </div>
-                              <div className="text-white/80">
+                              <div className="text-white/90">
                                 {getRelationshipExplanation(rel.type)}
                               </div>
-                              <div className="text-white/60 mt-1">
+                              <div className="text-white/80 mt-1 font-medium">
                                 {word.word} →{" "}
                                 {analysisData.words[rel.relatedWordIndex].word}
                               </div>
@@ -1162,186 +1331,13 @@ export default function TextAnalysisResult() {
                       </g>
                     );
                   })
-              )}
-            </svg>
-
-            {/* Words - using the hierarchical layout positions */}
-            <div className="relative z-10" style={{ minHeight: "400px" }}>
-              {wordPositions.map((item) => {
-                const word = item.word;
-                const index = item.id;
-                const dimmed = shouldDimNode(index);
-
-                return (
-                  <div
-                    key={index}
-                    className={`glass-panel p-2 text-center absolute word-box ${
-                      selectedWordIndex === index ? "selected" : ""
-                    } ${dimmed ? "opacity-30" : "opacity-100"}`}
-                    style={{
-                      width: "120px",
-                      backgroundColor: `rgba(${getWordColorRGB(
-                        word.partOfSpeech
-                      )}, 0.3)`,
-                      borderColor: `rgba(${getWordColorRGB(
-                        word.partOfSpeech
-                      )}, 0.5)`,
-                      left: `${item.x - 60}px`,
-                      top: `${item.y - 30}px`,
-                      transition: "all 0.3s ease-in-out",
-                      zIndex: selectedWordIndex === index ? 20 : 10,
-                    }}
-                    onClick={() => {
-                      setSelectedWordIndex(
-                        selectedWordIndex === index ? null : index
-                      );
-                    }}
-                  >
-                    <div className="font-serif">{word.word}</div>
-                    <div className="text-xs opacity-70">{word.lemma}</div>
-                    <div
-                      className="text-xs text-white/50 mt-1 px-1 rounded-sm"
-                      style={{
-                        backgroundColor:
-                          word.partOfSpeech === "verb"
-                            ? "rgba(196, 181, 253, 0.2)"
-                            : word.partOfSpeech === "noun"
-                            ? "rgba(147, 197, 253, 0.2)"
-                            : word.partOfSpeech === "adjective"
-                            ? "rgba(252, 211, 77, 0.2)"
-                            : "rgba(255, 255, 255, 0.1)",
-                      }}
-                    >
-                      {word.partOfSpeech}
-                    </div>
-
-                    {/* Show morphology hints */}
-                    {word.morphology && (
-                      <div
-                        className="text-xs text-white/60 mt-1 truncate"
-                        title={Object.entries(word.morphology)
-                          .map(([k, v]) => `${k}: ${v}`)
-                          .join(", ")}
-                      >
-                        {word.morphology.case && (
-                          <span className="text-primary-200">
-                            {word.morphology.case.substring(0, 3)}{" "}
-                          </span>
-                        )}
-                        {word.morphology.number && (
-                          <span>{word.morphology.number.substring(0, 3)} </span>
-                        )}
-                        {word.morphology.tense && (
-                          <span className="text-secondary-200">
-                            {word.morphology.tense.substring(0, 3)}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                )}
+              </svg>
             </div>
-          </div>
-        </div>
-
-        {/* Grammar legend and explanation */}
-        <div className="mt-4 glass-panel p-4">
-          <div className="text-sm font-medium mb-2">
-            Latin Grammar Relationships
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div className="flex items-center">
-              <div className="w-12 h-1 bg-secondary-300 mr-2"></div>
-              <div>
-                <span className="font-medium">Subject-Verb:</span>
-                <span className="text-white/70 ml-1">
-                  Links the doer (subject) to the action (verb)
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-12 h-1 bg-primary-300 mr-2"></div>
-              <div>
-                <span className="font-medium">Verb-Object:</span>
-                <span className="text-white/70 ml-1">
-                  Shows who/what receives the action
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-12 h-1 bg-amber-300 mr-2 border-t border-dashed border-amber-300"></div>
-              <div>
-                <span className="font-medium">Adjective-Noun:</span>
-                <span className="text-white/70 ml-1">
-                  Describes qualities of people or things
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-12 h-1 bg-lime-300 mr-2 border-t border-dashed border-lime-300"></div>
-              <div>
-                <span className="font-medium">Adverb-Verb:</span>
-                <span className="text-white/70 ml-1">
-                  Modifies how an action is performed
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Selected word details */}
-        {selectedWordIndex !== null && analysisData.words && (
-          <div className="mt-4">
-            {renderWordInfo(analysisData.words[selectedWordIndex])}
           </div>
         )}
       </div>
     );
-  };
-
-  // Function to get the color for relationships based on part of speech
-  const getRelationshipColor = (partOfSpeech: string): string => {
-    switch (partOfSpeech) {
-      case "noun":
-        return "#93c5fd"; // primary-300
-      case "verb":
-        return "#c4b5fd"; // secondary-300
-      case "adjective":
-        return "#fcd34d"; // amber-300
-      case "adverb":
-        return "#a3e635"; // lime-300
-      case "preposition":
-        return "#fda4af"; // rose-300
-      case "conjunction":
-        return "#67e8f9"; // cyan-300
-      case "pronoun":
-        return "#fdba74"; // orange-300
-      default:
-        return "#e5e7eb"; // gray-300
-    }
-  };
-
-  // Function to get RGB values for word backgrounds
-  const getWordColorRGB = (partOfSpeech: string): string => {
-    switch (partOfSpeech) {
-      case "noun":
-        return "147, 197, 253"; // primary-300
-      case "verb":
-        return "196, 181, 253"; // secondary-300
-      case "adjective":
-        return "252, 211, 77"; // amber-300
-      case "adverb":
-        return "163, 230, 53"; // lime-300
-      case "preposition":
-        return "253, 164, 175"; // rose-300
-      case "conjunction":
-        return "103, 232, 249"; // cyan-300
-      case "pronoun":
-        return "253, 186, 116"; // orange-300
-      default:
-        return "229, 231, 235"; // gray-300
-    }
   };
 
   // Main render function with view selection and content
@@ -1481,6 +1477,68 @@ export default function TextAnalysisResult() {
       {/* Content based on selected view */}
       {view === "annotated" && (
         <>
+          {/* Part of speech filters */}
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-white/80 font-medium mr-1">
+              Show parts of speech:
+            </span>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visiblePartsOfSpeech.includes("noun")
+                  ? "bg-blue-300/30 border border-blue-300 text-blue-200 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => togglePartOfSpeech("noun")}
+              title="Show/hide nouns"
+            >
+              Nouns
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visiblePartsOfSpeech.includes("verb")
+                  ? "bg-red-400/30 border border-red-400 text-red-200 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => togglePartOfSpeech("verb")}
+              title="Show/hide verbs"
+            >
+              Verbs
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visiblePartsOfSpeech.includes("adjective")
+                  ? "bg-amber-300/30 border border-amber-300 text-amber-200 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => togglePartOfSpeech("adjective")}
+              title="Show/hide adjectives"
+            >
+              Adjectives
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visiblePartsOfSpeech.includes("adverb")
+                  ? "bg-lime-300/30 border border-lime-300 text-lime-200 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => togglePartOfSpeech("adverb")}
+              title="Show/hide adverbs"
+            >
+              Adverbs
+            </button>
+            <button
+              className={`text-xs rounded-full px-3 py-1 ${
+                visiblePartsOfSpeech.includes("preposition")
+                  ? "bg-gray-300/30 border border-gray-300 text-gray-200 font-medium"
+                  : "bg-gray-700/70 text-white/60"
+              }`}
+              onClick={() => togglePartOfSpeech("preposition")}
+              title="Show/hide prepositions"
+            >
+              Prepositions
+            </button>
+          </div>
+
           <div className="glass-panel p-6 font-serif text-lg leading-relaxed min-h-64">
             {analysisData.words ? (
               analysisData.words.length > 0 ? (
@@ -1552,27 +1610,41 @@ export default function TextAnalysisResult() {
       )}
 
       <div className="mt-6 glass-panel p-4">
-        <div className="text-sm font-medium mb-2">Word Types Legend</div>
-        <div className="flex flex-wrap gap-3 text-sm">
+        <div className="text-sm font-medium mb-2">
+          Case & Word Type Color Legend
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 text-sm">
           <div className="flex items-center">
-            <span className="w-3 h-3 rounded-full bg-primary-300 mr-2"></span>
-            Nouns
-          </div>
-          <div className="flex items-center">
-            <span className="w-3 h-3 rounded-full bg-secondary-300 mr-2"></span>
-            Verbs
+            <span className="w-3 h-3 rounded-full bg-blue-300 mr-2"></span>
+            Nominative (Subject)
           </div>
           <div className="flex items-center">
             <span className="w-3 h-3 rounded-full bg-amber-300 mr-2"></span>
-            Adjectives
+            Accusative (Direct Object)
+          </div>
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-green-300 mr-2"></span>
+            Genitive (Possession)
+          </div>
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-purple-300 mr-2"></span>
+            Dative (Indirect Object)
+          </div>
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-rose-300 mr-2"></span>
+            Ablative (By/With/From)
+          </div>
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-cyan-300 mr-2"></span>
+            Vocative (Direct Address)
+          </div>
+          <div className="flex items-center">
+            <span className="w-3 h-3 rounded-full bg-red-400 mr-2"></span>
+            Verbs (All types)
           </div>
           <div className="flex items-center">
             <span className="w-3 h-3 rounded-full bg-lime-300 mr-2"></span>
             Adverbs
-          </div>
-          <div className="flex items-center">
-            <span className="w-3 h-3 rounded-full bg-rose-300 mr-2"></span>
-            Prepositions
           </div>
         </div>
       </div>
