@@ -151,6 +151,24 @@ function extractJsonFromText(text: string): string {
   return text;
 }
 
+// Add a timeout wrapper for the Gemini API call
+async function callWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeoutId: NodeJS.Timeout;
+  
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`Operation timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    // Race between the original promise and the timeout
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    clearTimeout(timeoutId!);
+  }
+}
+
 const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
@@ -163,7 +181,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
   try {
     // Parse the request body
     const body = JSON.parse(event.body || '{}') as AnalyzeLatinRequest;
-    const { text, stream = false } = body;
+    const { text, stream = false, shortenedText = false } = body;
     
     if (!text) {
       return {
@@ -171,7 +189,22 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
         body: JSON.stringify({
           error: 'No text provided for analysis',
         }),
+        headers: {
+          'Content-Type': 'application/json'
+        } as Record<string, string>
       };
+    }
+    
+    // Add some debug logging
+    console.log(`Received analysis request for text of length ${text.length} (${stream ? 'streaming' : 'regular'} request)`);
+    
+    // For streaming requests with very long text, we can truncate to avoid timeouts
+    let textToAnalyze = text;
+    if (stream && shortenedText && text.length > 500) {
+      // Truncate to first few sentences or 500 chars max for streaming
+      const sentenceMatch = text.match(/^((?:[^.!?]+[.!?]+\s*){1,3})/);
+      textToAnalyze = sentenceMatch ? sentenceMatch[0] : text.slice(0, 500);
+      console.log(`Long text detected for streaming request. Truncated from ${text.length} to ${textToAnalyze.length} characters.`);
     }
     
     // Simple client ID for rate limiting
@@ -241,11 +274,12 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
     // Initialize the Gemini API client with the newer model
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: "gemini-2.0-flash-lite", // Use the faster flash model for speed
       generationConfig: {
-        temperature: 0.2,  // Lower temperature for more deterministic outputs
-        topP: 0.9,
-        topK: 40
+        temperature: 0.1,  // Lower temperature for faster, more deterministic outputs
+        topP: 0.8,
+        topK: 40,
+        maxOutputTokens: 4096, // Limit output size for faster responses
       }
     });
     
@@ -318,6 +352,11 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
     `;
     
     // Create prompt for Latin text analysis with the improved schema
+    // If using shortened text for streaming, inform the model
+    const analysisNote = shortenedText && textToAnalyze !== text 
+      ? "\n\nNote: This is a partial analysis of the first part of a longer text." 
+      : "";
+    
     const prompt = `${systemInstructions}
 
 Analyze the following Latin text and provide a comprehensive grammatical breakdown following this schema:
@@ -333,19 +372,30 @@ Important rules for analysis:
    and "direction": "to" when it is acted upon (e.g., subject → verb)
 6. Ensure bidirectional relationships are captured (e.g., if word A relates to word B, word B should also relate to word A)
 7. Number words starting from 0 for each analysis type (wordIndex and relatedWordIndex)
-8. Include position data for enabling UI visualization features
+8. Include position data for enabling UI visualization features${analysisNote}
 
-Latin text to analyze: "${text}"
+Latin text to analyze: "${textToAnalyze}"
 `;
     
-    console.log('Sending request to Gemini API...');
-    
-    // Note: Netlify Functions don't support streaming responses in the same way as Astro APIs
-    // So we'll only implement the regular non-streaming approach
-    
+    // Log information about the request to help with debugging
+    console.log(`Processing ${stream ? 'streaming' : 'standard'} request for Latin text analysis`);
+    console.log(`API key status: ${apiKey ? 'Available' : 'Missing'}`);
+    console.log(`Text length: ${textToAnalyze.length} characters`);
+    console.log(`Using model: gemini-1.5-flash with low temperature`);
+
     try {
-      // Generate content with the model
-      const result = await model.generateContent(prompt);
+      // Generate content with the model with a timeout
+      console.log('Sending request to Gemini API...');
+      const startTime = Date.now();
+      
+      const result = await callWithTimeout(
+        model.generateContent(prompt),
+        25000 // 25 seconds timeout
+      );
+      
+      const endTime = Date.now();
+      console.log(`Gemini API response received in ${endTime - startTime}ms`);
+      
       const responseText = result.response.text();
       
       console.log('Response received from Gemini API');

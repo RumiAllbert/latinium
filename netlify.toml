@@ -34,6 +34,13 @@ status = 200
 [functions]
 node_bundler = "esbuild"
 included_files = [".env"]
+# Extend the function timeout to 30 seconds (maximum for Netlify Functions on regular plans)
+[functions.analyze]
+timeout = 30
+
+[build.environment]
+# Ensure we're using Node.js 18 or higher (required for Gemini API)
+NODE_VERSION = "18"
 
 [dev]
 framework = "astro"

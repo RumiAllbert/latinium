@@ -75,6 +75,7 @@ export interface LatinAnalysisError {
 export interface AnalyzeLatinRequest {
   text: string;
   stream?: boolean;
+  shortenedText?: boolean; // Whether to analyze a shortened version for long texts
 }
 
 export interface AnalyzeLatinStreamChunk {

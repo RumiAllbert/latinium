@@ -40,6 +40,12 @@ export async function analyzeLatin(
       };
     }
 
+    // If text is too long (over 500 characters), disable streaming to avoid timeouts
+    if (text.length > 500 && options.stream) {
+      console.warn('Text is too long for streaming analysis. Disabling streaming to avoid timeouts.');
+      options.stream = false;
+    }
+
     // If streaming is requested but no callback is provided, it doesn't make sense
     if (options.stream && !options.onStreamChunk) {
       console.warn('Stream option set but no onStreamChunk callback provided. Falling back to non-streaming request.');
@@ -51,8 +57,34 @@ export async function analyzeLatin(
     
     try {
       if (options.stream) {
-        // Handle streaming request
-        return await handleStreamingRequest(text, options.onStreamChunk!);
+        try {
+          // Handle streaming request with a timeout
+          const abortController = new AbortController();
+          const timeoutId = setTimeout(() => {
+            console.warn('Streaming request is taking too long, aborting and falling back to regular request');
+            abortController.abort();
+          }, 8000); // 8 second timeout for streaming
+
+          try {
+            return await handleStreamingRequest(text, options.onStreamChunk!, abortController.signal);
+          } catch (streamError: unknown) {
+            const error = streamError as { name?: string; message?: string };
+            if (error.name === 'AbortError' || error.message?.includes('timeout')) {
+              console.warn('Streaming request aborted or timed out, falling back to regular request');
+              // If the streaming request was aborted or timed out, try a regular request
+              if (options.onStreamChunk) {
+                options.onStreamChunk('Streaming timed out. Switching to standard request...');
+              }
+              return await handleRegularRequest(text);
+            }
+            throw streamError; // Re-throw other errors
+          } finally {
+            clearTimeout(timeoutId);
+          }
+        } catch (streamingError) {
+          console.warn('Error with streaming request, falling back to regular request:', streamingError);
+          return await handleRegularRequest(text);
+        }
       } else {
         // Handle regular request
         return await handleRegularRequest(text);
@@ -151,7 +183,8 @@ async function handleRegularRequest(text: string): Promise<{
  */
 async function handleStreamingRequest(
   text: string, 
-  onStreamChunk: (chunk: string) => void
+  onStreamChunk: (chunk: string) => void,
+  signal?: AbortSignal
 ): Promise<{
   result: AnalysisResult,
   isMockData: boolean
@@ -165,7 +198,13 @@ async function handleStreamingRequest(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ text, stream: true }),
+    body: JSON.stringify({ 
+      text, 
+      stream: true,
+      // For streaming, use a shorter text if it's too long
+      shortenedText: text.length > 500 ? true : false
+    }),
+    signal // Pass the abort signal for timeout control
   });
 
   if (!response.ok) {
