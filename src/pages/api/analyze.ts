@@ -206,7 +206,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Initialize the Gemini API client with the newer model
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash-lite",
+      model: "gemini-2.0-flash",
       // Add system instructions to guide the model's behavior
       systemInstruction: `You are Latinium, an expert Latin language analysis system that specializes in 
       detailed grammatical analysis of Latin texts. Your purpose is to provide accurate, 
