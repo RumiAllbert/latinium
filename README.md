@@ -4,7 +4,7 @@
 
 Latinium is a cutting-edge web application that transforms Latin text analysis through beautiful visualizations and interactive annotation features. Powered by Google's Gemini AI, Latinium helps students, educators, and Latin enthusiasts understand complex grammatical structures through dynamic visual representations.
 
-![Latinium in action](https://via.placeholder.com/800x400?text=Latinium+Demo)
+![Latinium in action]()
 
 ## ✨ Key Features
 
