@@ -11,9 +11,9 @@ function getApiEndpoint(): string {
     return '/api/analyze';
   }
   
-  // In production on Netlify, use the Netlify function endpoint
-  // The Netlify.toml redirects will handle mapping /api/analyze to /.netlify/functions/analyze
-  return '/api/analyze';
+  // In production on Netlify, use the direct Netlify function endpoint
+  // This avoids relying on redirects which might cause issues
+  return '/.netlify/functions/analyze';
 }
 
 /**

@@ -369,8 +369,8 @@ Latin text to analyze: "${text}"
           headers: {
             'Content-Type': 'application/json',
             'X-Cache': 'MISS'
-          }
-        } as const;
+          } as Record<string, string>
+        };
       } catch (parseError) {
         console.error('Raw response was:', responseText);
         console.error('Cleaned JSON was:', cleanedJson);
@@ -383,7 +383,10 @@ Latin text to analyze: "${text}"
             rawResponse: cleanedJson.substring(0, 200) + '...', // Include partial raw response for debugging
             fallback: true, // Indicator that client should use fallback
             errorType: 'parsing_error'
-          } as LatinAnalysisError)
+          } as LatinAnalysisError),
+          headers: {
+            'Content-Type': 'application/json'
+          } as Record<string, string>
         };
       }
     } catch (apiError) {
@@ -416,7 +419,7 @@ Latin text to analyze: "${text}"
         headers: {
           'Content-Type': 'application/json',
           ...(statusCode === 429 ? { 'Retry-After': '60' } : {}) // Suggest retry after 1 minute for rate limits
-        }
+        } as Record<string, string>
       };
     }
   } catch (error) {
@@ -426,9 +429,12 @@ Latin text to analyze: "${text}"
         error: 'Failed to analyze text',
         details: error instanceof Error ? error.message : String(error),
         errorType: 'general_error',
-        fallback: true, // Indicator that client should use fallback
-        timestamp: new Date().toISOString() // Include timestamp for logging purposes
-      } as LatinAnalysisError)
+        fallback: true,
+        timestamp: new Date().toISOString()
+      } as LatinAnalysisError),
+      headers: {
+        'Content-Type': 'application/json'
+      } as Record<string, string>
     };
   }
 };
