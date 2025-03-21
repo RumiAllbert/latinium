@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AnalysisResult } from "../types/AnalysisResult";
-import { analyzeLatin } from "../utils/geminiApi";
+import { analyzeLatin } from "../utils/directGeminiApi";
 import StreamingAnalysisDisplay from "./StreamingAnalysisDisplay";
 
 // Define the LatinAnalysisError interface
