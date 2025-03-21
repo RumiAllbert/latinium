@@ -41,7 +41,7 @@ export default defineConfig({
     tailwind(),
     react(),
   ],
-  output: 'server',
+  output: 'static',
   site: 'https://latinium.app',
   vite: {
     define: {
