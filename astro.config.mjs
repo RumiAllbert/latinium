@@ -33,8 +33,16 @@ function loadEnvFromFile() {
   return {};
 }
 
-// Load the env variables
-const envVars = loadEnvFromFile();
+// Load the env variables from file and process.env
+const envVars = {
+  ...loadEnvFromFile(),
+  ...process.env // Allow process.env to override file values
+};
+
+// Log the state of key variables for debugging
+console.log('Environment variable status:');
+console.log('- GEMINI_API_KEY present:', !!envVars.GEMINI_API_KEY);
+console.log('- PUBLIC_GEMINI_API_KEY present:', !!envVars.PUBLIC_GEMINI_API_KEY);
 
 export default defineConfig({
   integrations: [
@@ -47,9 +55,11 @@ export default defineConfig({
     define: {
       // Make env variables available to client-side code if needed
       'import.meta.env.GEMINI_API_KEY': JSON.stringify(envVars.GEMINI_API_KEY || ''),
-      // Use PUBLIC_GEMINI_API_KEY for client-side use
-      'import.meta.env.PUBLIC_GEMINI_API_KEY': JSON.stringify(envVars.PUBLIC_GEMINI_API_KEY || ''),
+      // Use PUBLIC_GEMINI_API_KEY for client-side use - this is the one accessed in the browser
+      'import.meta.env.PUBLIC_GEMINI_API_KEY': JSON.stringify(envVars.PUBLIC_GEMINI_API_KEY || envVars.GEMINI_API_KEY || ''),
     },
+    // Additional Vite config for environment variables
+    envPrefix: ['PUBLIC_', 'VITE_'],
   },
   build: {
     format: 'directory'

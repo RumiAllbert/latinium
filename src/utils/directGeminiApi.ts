@@ -1,12 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisResult } from '../types/AnalysisResult';
 import { getMockAnalysisData } from './mockData';
+import { getGeminiApiKey } from './netlifyEnv';
 import { extractJsonFromText } from './textUtils';
 
 // Safe environment variable access with fallback
 const getApiKey = (): string => {
-  // For production, we'll use a frontend-safe method of accessing the API key
-  return import.meta.env.PUBLIC_GEMINI_API_KEY || '';
+  // For production, we'll use our robust utility function that handles multiple fallbacks
+  return getGeminiApiKey();
 };
 
 /**

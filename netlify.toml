@@ -11,6 +11,8 @@ status = 200
 [build.environment]
 # Ensure we're using Node.js 18 or higher (required for modern JavaScript features)
 NODE_VERSION = "18"
+# Explicitly make sure environment variables are processed during build
+NETLIFY_USE_CREDENTIALS = "true"
 
 [dev]
 framework = "astro"
