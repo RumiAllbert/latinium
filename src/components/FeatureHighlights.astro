@@ -1,54 +1,238 @@
 ---
-const features = [
-  {
-    title: "Grammatical Analysis",
-    description:
-      "Automatic part-of-speech identification with color-coding for nouns, verbs, adjectives, and more. Includes detailed morphological analysis showing declensions, conjugations, and grammatical forms.",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-          </svg>`,
-  },
-  {
-    title: "Interactive Visualization",
-    description:
-      "Elegant relationship mapping system with dynamic arrows showing grammatical connections. Hover over words to reveal relationships and visualize sentence structure with beautiful animations.",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
-          </svg>`,
-  },
-  {
-    title: "Powered by Gemini AI",
-    description:
-      "Leveraging Google's advanced Gemini AI models for accurate and comprehensive Latin text analysis, providing detailed grammatical information and contextual understanding.",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.5 20.25h-9.75A2.25 2.25 0 004.5 18v-9.75A2.25 2.25 0 006.75 6h9.75A2.25 2.25 0 0018.75 8.25v9.75a2.25 2.25 0 01-2.25 2.25z" />
-          </svg>`,
-  },
-  {
-    title: "Educational Tools",
-    description:
-      "Difficulty assessment for texts, integrated dictionary lookup, grammar rule explanations, and practice exercises generated from analyzed text. Perfect for students and educators.",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-          </svg>`,
-  },
-];
+
 ---
 
-<div class="max-w-5xl mx-auto">
-  <h2 class="text-3xl font-serif font-bold mb-12 text-center">Key Features</h2>
+<div class="space-y-8">
+  <!-- Section Header -->
+  <div class="text-center space-y-4">
+    <h2
+      class="text-4xl font-bold text-white/95 hero-subtitle-shadow md:text-5xl"
+    >
+      AI-Powered Latin Analysis
+    </h2>
+    <p class="text-xl text-white/70 max-w-3xl mx-auto">
+      Experience the future of Latin learning with intelligent analysis,
+      real-time insights, and interactive tutoring.
+    </p>
+  </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    {
-      features.map((feature) => (
-        <div class="glass-panel p-6 animate-slide-up">
-          <div class="mb-4 text-primary-300">
-            <Fragment set:html={feature.icon} />
+  <!-- Bento Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Main Feature - Grammar Analysis -->
+    <div class="lg:col-span-2">
+      <SpotlightCard
+        className="h-full min-h-[300px] flex flex-col justify-center"
+        spotlightColor="rgba(59, 130, 246, 0.2)"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-semibold text-white">
+              Instant Grammar Analysis
+            </h3>
           </div>
-          <h3 class="text-xl font-medium mb-2">{feature.title}</h3>
-          <p class="text-white/70">{feature.description}</p>
+          <p class="text-white/80 text-lg leading-relaxed">
+            Get instant, detailed grammatical analysis of any Latin text. Our AI
+            identifies cases, tenses, moods, and syntactical relationships in
+            real-time.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span
+              class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
+              >Noun Cases</span
+            >
+            <span
+              class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
+              >Verb Tenses</span
+            >
+            <span
+              class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
+              >Syntax</span
+            >
+          </div>
         </div>
-      ))
-    }
+      </SpotlightCard>
+    </div>
+
+    <!-- Interactive Annotations -->
+    <div>
+      <SpotlightCard
+        className="h-full min-h-[300px] flex flex-col justify-center"
+        spotlightColor="rgba(147, 197, 253, 0.2)"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white">
+              Interactive Annotations
+            </h3>
+          </div>
+          <p class="text-white/80">
+            Hover over any word to see instant analysis. Click to pin
+            annotations and build your understanding step by step.
+          </p>
+        </div>
+      </SpotlightCard>
+    </div>
+
+    <!-- AI Tutoring -->
+    <div>
+      <SpotlightCard
+        className="h-full min-h-[300px] flex flex-col justify-center"
+        spotlightColor="rgba(34, 197, 94, 0.2)"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white">AI Tutoring</h3>
+          </div>
+          <p class="text-white/80">
+            Get personalized explanations and learning guidance tailored to your
+            level and progress.
+          </p>
+        </div>
+      </SpotlightCard>
+    </div>
+
+    <!-- Translation & Context -->
+    <div>
+      <SpotlightCard
+        className="h-full min-h-[300px] flex flex-col justify-center"
+        spotlightColor="rgba(251, 191, 36, 0.2)"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-yellow-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white">Smart Translation</h3>
+          </div>
+          <p class="text-white/80">
+            Context-aware translations that preserve meaning and literary
+            nuance, not just word-for-word replacements.
+          </p>
+        </div>
+      </SpotlightCard>
+    </div>
+
+    <!-- Progress Tracking -->
+    <div class="lg:col-span-2">
+      <SpotlightCard
+        className="h-full min-h-[300px] flex flex-col justify-center"
+        spotlightColor="rgba(168, 85, 247, 0.2)"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-semibold text-white">
+              Learning Analytics
+            </h3>
+          </div>
+          <p class="text-white/80 text-lg leading-relaxed">
+            Track your progress with detailed analytics. See which concepts
+            you've mastered and identify areas for improvement.
+          </p>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="space-y-2">
+              <div class="text-sm text-white/60">Grammar Mastery</div>
+              <div class="w-full bg-white/10 rounded-full h-2">
+                <div class="bg-blue-400 h-2 rounded-full" style="width: 75%">
+                </div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="text-sm text-white/60">Vocabulary</div>
+              <div class="w-full bg-white/10 rounded-full h-2">
+                <div class="bg-green-400 h-2 rounded-full" style="width: 60%">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SpotlightCard>
+    </div>
   </div>
 </div>

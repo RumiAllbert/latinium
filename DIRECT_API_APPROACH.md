@@ -97,6 +97,20 @@ When exposing API keys to the client:
 
 A demo page is available at `/direct-api-demo` that shows how to use the direct API approach.
 
+## New UI: Hover-to-Analyze Sentences
+
+The landing analysis panel now includes a hover-driven sentence analyzer:
+
+- Hover a sentence: A subtle aura appears while that sentence is analyzed.
+- Popover breakdown: A popup shows parts of speech and relationships.
+- Word hover: Hover a word in the popover to highlight the words it modifies (and vice versa) in the sentence.
+
+This uses the same direct Gemini client but sends only the hovered sentence for faster, focused analysis.
+
+## Model Choice
+
+We use `models/gemini-2.5-flash` for fast, sentence-level inspection with structured output. See `src/utils/directGeminiApi.ts`.
+
 ## Migrating from Netlify Functions
 
 If you're currently using Netlify Functions:

@@ -1,20 +1,19 @@
-# 🏛️ Latinium: Interactive Latin Text Analysis Platform
+# 🏛️ Latinium: Learn Latin Interactively
 
 > **Bring ancient Latin to life with modern visualization and AI analysis!**
 
-Latinium is a cutting-edge web application that transforms Latin text analysis through beautiful visualizations and interactive annotation features. Powered by Google's Gemini AI, Latinium helps students, educators, and Latin enthusiasts understand complex grammatical structures through dynamic visual representations.
+Latinium is a learning-first web app for reading Latin. Paste text, lock it, hover sentences for instant breakdowns, then pin a sentence to get a guided Tutor walkthrough, an auto‑generated Quiz, and build your own Vocab deck. Powered by Google’s Gemini.
 
 [Latinium In Action](https://latinium.rumiallbert.com/)
 
 ## ✨ Key Features
 
-- 📝 **Smart Text Analysis** - Paste any Latin text and get instant grammatical breakdown
-- 🎨 **Case-Based Coloring** - Words are visually color-coded by grammatical case (nominative, accusative, genitive, dative, ablative, vocative)
-- 🔄 **Interactive Relationships** - Explore connections between words with intuitive visualization
-- 📊 **Traditional & Interactive Views** - Switch between visualization styles based on your preference
-- 🔍 **Word Details On-Demand** - Hover for quick insights, click for comprehensive information
-- ⚡ **Streaming Analysis** - See results appear in real-time as the AI processes your text
-- 🧠 **AI-Powered** - Leveraging Google's Gemini 2.0 for accurate Latin analysis
+- 🔒 Lock & Hover analysis: fast sentence‑level breakdowns with animated auras
+- 📌 Pin a sentence: open Tutor (guided steps) and Quiz (MCQs) for that line
+- 🗂️ Vocab deck: save words and meanings to a local deck
+- 🎨 Case-based coloring and relationship cues for clarity
+- 🌓 Light mode by default with a theme toggle
+- ⚡ Direct Gemini client using `models/gemini-2.5-flash` with structured output
 
 ## 🚀 Getting Started
 
@@ -46,14 +45,11 @@ Latinium is a cutting-edge web application that transforms Latin text analysis t
 
 ## 🔧 Working with Latinium
 
-### Analyzing Latin Text
+### Using the Workspace
 
-1. Paste your Latin text in the input area
-2. Click "Analyze" and watch the magic happen ✨
-3. Explore the results:
-   - Color-coded words by grammatical case
-   - Interactive relationship visualization
-   - Detailed morphological information
+1. Paste text → click “Lock & Analyze”
+2. Hover sentences to analyze; click a sentence to pin it
+3. Use Tutor/Quiz/Vocab (right panel) for learning workflow
 
 ### Case-Based Coloring 🎨
 
@@ -69,10 +65,10 @@ Words are now colored based on their grammatical case to make Latin easier to un
 
 This visualization helps you instantly recognize grammatical patterns and understand how words relate to each other in Latin sentences.
 
-### Visualization Modes
+### Tutor & Quiz
 
-- **Traditional View** 📊 - Hierarchical tree-like visualization with connecting arrows
-- **Interactive View** 🔄 - Group-based organization by part of speech with hover interactions
+- Tutor builds small steps: find verb, subject, objects, modifiers, then translate
+- Quiz generates 3–5 questions (identify subject, tense, case usage, agreement, etc.)
 
 ### Word Filtering
 

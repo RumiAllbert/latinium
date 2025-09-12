@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { AnalysisResult } from "../types/AnalysisResult";
 import { analyzeLatin } from "../utils/directGeminiApi";
 import StreamingAnalysisDisplay from "./StreamingAnalysisDisplay";
+import SentenceHoverAnalyzer from "./SentenceHoverAnalyzer";
 
 // Define the LatinAnalysisError interface
 interface LatinAnalysisError {
@@ -503,6 +504,13 @@ export default function TextInputArea() {
           More
         </a>
       </div>
+
+      {/* Hover-to-analyze preview */}
+      {text && (
+        <div className="mt-6">
+          <SentenceHoverAnalyzer text={text} />
+        </div>
+      )}
 
       {isStreaming && (
         <StreamingAnalysisDisplay

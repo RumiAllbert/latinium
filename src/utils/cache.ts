@@ -1,4 +1,4 @@
-import { LatinAnalysisResponse } from '../types/latin';
+import type { LatinAnalysisResponse } from '../types/latin';
 
 /**
  * Simple in-memory cache for Latin analysis results

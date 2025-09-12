@@ -5,6 +5,7 @@ export interface WordRelationship {
   type: string; // e.g., "subject-verb", "verb-object", "adjective-noun"
   relatedWordIndex: number; // Index of the related word in the words array
   description: string; // Brief explanation of the relationship
+  direction?: 'from' | 'to';
 }
 
 /**
@@ -54,6 +55,9 @@ export interface AnalyzedWord {
   morphology: Morphology;
   relationships: WordRelationship[];
   relatedWords?: RelatedWords; // Related Latin words
+  roleInSentence?: string;
+  position?: { sentenceIndex: number; wordIndex: number };
+  notes?: string;
 }
 
 /**

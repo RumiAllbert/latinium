@@ -40,15 +40,15 @@ export async function analyzeLatin(
       };
     }
 
-    // Initialize the Gemini API client
+    // Initialize the Gemini API client (without structured output fields for this SDK version)
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "models/gemini-2.5-flash",
       generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 4096,
         topP: 0.8,
-        topK: 40,
+        topK: 40
       }
     });
 
@@ -84,10 +84,12 @@ export async function analyzeLatin(
           "derivedForms": Array<string>,
           "usageExamples": Array<string>
         },
+        "roleInSentence"?: string,
         "position": {
           "sentenceIndex": number,
           "wordIndex": number
-        }
+        },
+        "notes"?: string
       }>,
       "sentences"?: Array<{
         "original": string,
@@ -95,13 +97,14 @@ export async function analyzeLatin(
         "structure"?: string
       }>
     }
-    Return: LatinAnalysis
-    `;
+    Return: LatinAnalysis (valid JSON only)`;
 
     // Limit text length to get faster responses
     const textToAnalyze = text.length > 500 ? text.substring(0, 500) : text;
 
-    const prompt = `You are Latinium, an expert Latin language analysis system. Analyze the following Latin text and provide a comprehensive grammatical breakdown following this schema:
+    const prompt = `You are Latinium, an expert Latin analysis system.
+    Task: Return ONLY valid JSON, no commentary, exactly matching the schema below.
+    If a field is unknown, use null or omit it. Never wrap JSON in markdown.
 
     ${schema}
 
@@ -114,6 +117,8 @@ export async function analyzeLatin(
     5. Ensure bidirectional relationships are captured
     6. Number words starting from 0
     7. Include position data for visualization
+    8. Include a short translation at sentence level when possible
+    9. Prefer concise values; avoid long commentary in notes
 
     Latin text to analyze: "${textToAnalyze}"
     `;

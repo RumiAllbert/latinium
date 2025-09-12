@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle";
 
 interface Props {
   title?: string;
@@ -26,39 +27,24 @@ const {
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Apply saved theme ASAP to avoid FOUC
+      try {
+        const saved = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", saved);
+        if (saved === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch {}
+    </script>
   </head>
-  <body
-    class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen"
-  >
-    <div class="stars-bg fixed inset-0 z-0 opacity-50"></div>
+  <body class="min-h-screen">
+    <div class="stars-bg fixed inset-0 z-0 opacity-40"></div>
 
     <div class="relative z-10">
-      <header class="container mx-auto px-4 py-6">
-        <nav class="flex justify-between items-center">
-          <div class="flex items-center gap-2">
-            <img src="/logo.svg" alt="Latinium.ai Logo" class="h-8 w-8" />
-            <h1
-              class="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-300 to-secondary-300"
-            >
-              Latinium.ai
-            </h1>
-          </div>
-          <div class="flex gap-6">
-            <a href="/" class="text-white/80 hover:text-white transition"
-              >Home</a
-            >
-            <a href="/about" class="text-white/80 hover:text-white transition"
-              >About</a
-            >
-            <a
-              href="/examples"
-              class="text-white/80 hover:text-white transition">Examples</a
-            >
-          </div>
-        </nav>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
+      <main class="w-full">
         <slot />
       </main>
 
@@ -77,9 +63,9 @@ const {
   .stars-bg {
     background-image: radial-gradient(
       circle at 1px 1px,
-      rgba(255, 255, 255, 0.15) 1px,
+      var(--star-color, rgba(0, 0, 0, 0.1)) 1px,
       transparent 0
     );
-    background-size: 50px 50px;
+    background-size: 48px 48px;
   }
 </style>

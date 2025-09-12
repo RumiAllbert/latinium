@@ -2,27 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme tokens */
+:root {
+  --bg: #0b1220; /* dark base */
+  --bg-accent: rgba(20,25,40,0.7);
+  --fg: #e5e7eb;
+  --muted: rgba(229, 231, 235, 0.7);
+  --border: rgba(255,255,255,0.12);
+  --panel: rgba(20,25,40,0.7);
+  --button: rgba(30,40,60,0.5);
+  --button-hover: rgba(50,60,80,0.5);
+  --input: rgba(20,30,50,0.3);
+  --star-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --bg-accent: #ffffffea;
+  --fg: #0f172a;
+  --muted: rgba(15, 23, 42, 0.7);
+  --border: rgba(15, 23, 42, 0.12);
+  --panel: rgba(255,255,255,0.85);
+  --button: rgba(15,23,42,0.06);
+  --button-hover: rgba(15,23,42,0.12);
+  --input: rgba(255,255,255,0.9);
+  --star-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --bg-accent: rgba(20,25,40,0.7);
+  --fg: #e5e7eb;
+  --muted: rgba(229, 231, 235, 0.7);
+  --border: rgba(255,255,255,0.12);
+  --panel: rgba(20,25,40,0.7);
+  --button: rgba(30,40,60,0.5);
+  --button-hover: rgba(50,60,80,0.5);
+  --input: rgba(20,30,50,0.3);
+  --star-color: rgba(255, 255, 255, 0.12);
+}
+
 @layer base {
   body {
     @apply font-sans text-base antialiased;
+    background: var(--bg);
+    color: var(--fg);
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg;
+    @apply backdrop-blur-lg rounded-xl shadow-lg;
+    background: var(--panel);
+    border: 1px solid var(--border);
   }
   
   .glass-button {
-    @apply px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg 
-           border border-white/20 transition duration-300 shadow-sm;
+    @apply px-4 py-2 backdrop-blur-md rounded-lg 
+           transition duration-300 shadow-sm;
+    background: var(--button);
+    border: 1px solid var(--border);
   }
   
   .glass-input {
-    @apply bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 
-           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent 
-           placeholder:text-white/40 text-white;
+    @apply backdrop-blur-sm rounded-lg px-4 py-2 
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent;
+    background: var(--input);
+    border: 1px solid var(--border);
+    color: var(--fg);
   }
+
+  .nav-link {
+    @apply transition;
+    color: var(--muted);
+  }
+  .nav-link:hover { color: var(--fg); }
 }
 
 /* Custom scrollbars */
@@ -32,18 +86,32 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--button);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in oklab, var(--fg) 20%, transparent);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in oklab, var(--fg) 35%, transparent);
 }
+
+/* Light theme overrides for Tailwind utility classes commonly used */
+[data-theme="light"] .text-white { color: #0f172a !important; }
+[data-theme="light"] .text-white\/90 { color: rgba(15, 23, 42, 0.90) !important; }
+[data-theme="light"] .text-white\/80 { color: rgba(15, 23, 42, 0.80) !important; }
+[data-theme="light"] .text-white\/70 { color: rgba(15, 23, 42, 0.70) !important; }
+[data-theme="light"] .text-white\/60 { color: rgba(15, 23, 42, 0.60) !important; }
+[data-theme="light"] .text-white\/50 { color: rgba(15, 23, 42, 0.50) !important; }
+[data-theme="light"] .text-white\/40 { color: rgba(15, 23, 42, 0.40) !important; }
+[data-theme="light"] .bg-white\/5 { background-color: rgba(255,255,255,0.6) !important; }
+[data-theme="light"] .bg-white\/10 { background-color: rgba(255,255,255,0.7) !important; }
+[data-theme="light"] .bg-white\/15 { background-color: rgba(255,255,255,0.75) !important; }
+[data-theme="light"] .bg-white\/20 { background-color: rgba(255,255,255,0.8) !important; }
+[data-theme="light"] .bg-white\/30 { background-color: rgba(255,255,255,0.9) !important; }
 
 /* Highlighting styles for Latin text analysis */
 .highlight-noun {
@@ -135,8 +203,8 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  background: rgba(20, 20, 30, 0.95);
-  color: white;
+  background: color-mix(in oklab, var(--bg) 96%, black 4%);
+  color: var(--fg);
   padding: 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
@@ -145,8 +213,8 @@
   transition: opacity 0.3s, transform 0.3s;
   pointer-events: none;
   z-index: 100;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
 }
 
 .word:hover::before,
@@ -398,6 +466,27 @@ tspan.adverb-verb {
   animation: attention 1.5s ease-out forwards;
 }
 
+.hero-text-shadow {
+  text-shadow:
+    0 0 8px rgba(147, 197, 253, 0.7),
+    0 0 16px rgba(191, 219, 254, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitle-shadow {
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.hero-description-shadow {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
 /* Character counter styling */
 .char-counter {
   transition: color 0.3s ease;
@@ -407,7 +496,7 @@ tspan.adverb-verb {
 }
 
 .char-counter-normal {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--muted);
 }
 
 .char-counter-warning {
