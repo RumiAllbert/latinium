@@ -1,0 +1,11 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import FullGraph from "../components/app/FullGraph";
+---
+
+<MainLayout title="Latinium.ai – Graph" description="Full dependency graph visualization.">
+  <div class="min-h-screen" style={{ background: "var(--bg)", color: "var(--fg)" }}>
+    <FullGraph client:load />
+  </div>
+</MainLayout>
+

@@ -1,0 +1,21 @@
+---
+import ProgressDashboard from "../components/app/ProgressDashboard.tsx";
+import TopBar from "../components/app/TopBar.tsx";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout
+  title="Latinium.ai – Progress Dashboard"
+  description="Track your Latin learning progress with detailed statistics and achievements."
+>
+  <div
+    class="flex flex-col min-h-screen"
+    style={{ background: "var(--bg)", color: "var(--fg)" }}
+  >
+    <TopBar client:load />
+
+    <main class="flex-1 pt-16">
+      <ProgressDashboard client:load />
+    </main>
+  </div>
+</MainLayout>

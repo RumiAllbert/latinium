@@ -3,9 +3,9 @@ import type { APIRoute } from 'astro';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type {
-  AnalyzeLatinRequest,
-  LatinAnalysisError,
-  LatinAnalysisResponse
+    AnalyzeLatinRequest,
+    LatinAnalysisError,
+    LatinAnalysisResponse
 } from '../../types/latin';
 import { latinCache } from '../../utils/cache';
 import { getGeminiApiKey } from '../../utils/env';
@@ -206,7 +206,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Initialize the Gemini API client with the newer model
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: "models/gemini-2.5-flash-lite",
       // Add system instructions to guide the model's behavior
       systemInstruction: `You are Latinium, an expert Latin language analysis system that specializes in 
       detailed grammatical analysis of Latin texts. Your purpose is to provide accurate, 

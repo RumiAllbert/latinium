@@ -1,0 +1,21 @@
+---
+import AchievementsPage from "../components/app/AchievementsPage.tsx";
+import TopBar from "../components/app/TopBar.tsx";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout
+  title="Latinium.ai – Achievements"
+  description="View your Latin learning achievements and unlock new challenges."
+>
+  <div
+    class="flex flex-col min-h-screen"
+    style={{ background: "var(--bg)", color: "var(--fg)" }}
+  >
+    <TopBar client:load />
+
+    <main class="flex-1 pt-16">
+      <AchievementsPage client:load />
+    </main>
+  </div>
+</MainLayout>

@@ -1,0 +1,21 @@
+---
+import TextLibrary from "../components/app/TextLibrary.tsx";
+import TopBar from "../components/app/TopBar.tsx";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout
+  title="Latinium.ai – Text Library"
+  description="Browse and manage your Latin text collection for study and analysis."
+>
+  <div
+    class="flex flex-col min-h-screen"
+    style={{ background: "var(--bg)", color: "var(--fg)" }}
+  >
+    <TopBar client:load />
+
+    <main class="flex-1 pt-16">
+      <TextLibrary client:load />
+    </main>
+  </div>
+</MainLayout>
