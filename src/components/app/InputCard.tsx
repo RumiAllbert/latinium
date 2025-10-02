@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Wand2 } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Clock, Wand2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAppStore } from "../../store/appStore";
+import { getRateLimitStatus } from "../../utils/rateLimiter";
 
 const CHAR_LIMIT = 800;
 
@@ -68,8 +69,18 @@ const LightRayLoader = () => {
 
 const InputCard = () => {
   const [text, setText] = useState(samples[0].text);
-  const { analysisState, analyzeText } = useAppStore();
+  const [rateLimitInfo, setRateLimitInfo] = useState(getRateLimitStatus());
+  const { analysisState, analyzeText, rateLimitError } = useAppStore();
   const isAnalyzing = analysisState === "analyzing";
+
+  // Update rate limit status periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRateLimitInfo(getRateLimitStatus());
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAnalyze = () => {
     console.log("Analyze button clicked. Sending text to store:", text);
@@ -89,6 +100,63 @@ const InputCard = () => {
             <span>Paste text or select a sample</span>
           </div>
         </div>
+
+        {/* Rate Limit Status */}
+        <div className="mb-4 p-3 bg-slate-500/10 rounded-lg border border-slate-400/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {rateLimitInfo.isLimited ? (
+                <AlertTriangle className="h-4 w-4 text-red-400" />
+              ) : (
+                <Clock className="h-4 w-4 text-blue-400" />
+              )}
+              <span
+                className={`text-sm font-medium ${
+                  rateLimitInfo.isLimited
+                    ? "text-red-400"
+                    : rateLimitInfo.remaining <= 3
+                    ? "text-amber-400"
+                    : "text-slate-600 dark:text-white/60"
+                }`}
+              >
+                {rateLimitInfo.isLimited
+                  ? "Rate Limited"
+                  : `${rateLimitInfo.remaining} requests left`}
+              </span>
+            </div>
+            <span className="text-xs text-slate-500 dark:text-white/50">
+              Resets: {rateLimitInfo.timeUntilReset}
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mt-2 w-full bg-slate-600/20 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all duration-300 ${
+                rateLimitInfo.isLimited
+                  ? "bg-red-400"
+                  : rateLimitInfo.remaining <= 3
+                  ? "bg-amber-400"
+                  : "bg-green-400"
+              }`}
+              style={{ width: `${rateLimitInfo.percentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Rate Limit Error Message */}
+        {rateLimitError && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-400/20 rounded-lg">
+            <div className="flex items-center gap-2 text-red-300">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm font-medium">Rate Limit Exceeded</span>
+            </div>
+            <p className="text-xs text-red-200/80 mt-1">
+              You've reached the limit of 15 analyses per 6 hours. Please wait
+              for the reset timer or try again later.
+            </p>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2 mb-4">
           {samples.map((s) => (
@@ -127,13 +195,24 @@ const InputCard = () => {
           </span>
           <button
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg ${
-              text.length === 0 || text.length > CHAR_LIMIT || isAnalyzing
+              text.length === 0 ||
+              text.length > CHAR_LIMIT ||
+              isAnalyzing ||
+              rateLimitInfo.isLimited
                 ? "glass-button opacity-50"
                 : "glass-button-primary hover:scale-105"
             }`}
             onClick={handleAnalyze}
             disabled={
-              text.length === 0 || text.length > CHAR_LIMIT || isAnalyzing
+              text.length === 0 ||
+              text.length > CHAR_LIMIT ||
+              isAnalyzing ||
+              rateLimitInfo.isLimited
+            }
+            title={
+              rateLimitInfo.isLimited
+                ? `Rate limited. Resets in ${rateLimitInfo.timeUntilReset}`
+                : undefined
             }
           >
             {isAnalyzing ? (

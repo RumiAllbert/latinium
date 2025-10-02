@@ -99,6 +99,7 @@ interface AppState {
   analysisResult: AnalysisResult | null;
   analysisState: AnalysisState;
   error: string | null;
+  rateLimitError: boolean;
   hoveredWordIndex: number | null;
   inspectedWordIndex: number | null;
 
@@ -173,6 +174,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   analysisResult: null,
   analysisState: 'idle',
   error: null,
+  rateLimitError: false,
   hoveredWordIndex: null,
   inspectedWordIndex: null,
 
@@ -219,17 +221,29 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
 
     try {
-      const { result, isMockData } = await analyzeLatin(text);
+      const { result, isMockData, rateLimited } = await analyzeLatin(text);
+
+      if (rateLimited) {
+        const rateLimitMessage = 'Rate limit exceeded. Please wait for the reset timer or try again later.';
+        console.warn(rateLimitMessage);
+        set({
+          error: rateLimitMessage,
+          analysisState: 'error',
+          rateLimitError: true
+        });
+        return;
+      }
+
       if (isMockData) {
         console.warn("Displaying mock data as a fallback.");
       }
       console.log('Setting analysis result:', { result, wordCount: result.words?.length, isMockData });
       console.log('First few words:', result.words?.slice(0, 3));
-      set({ analysisResult: result, analysisState: 'success' });
+      set({ analysisResult: result, analysisState: 'success', rateLimitError: false });
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
       console.error("Analysis failed:", errorMessage);
-      set({ error: errorMessage, analysisState: 'error' });
+      set({ error: errorMessage, analysisState: 'error', rateLimitError: false });
     }
   },
 

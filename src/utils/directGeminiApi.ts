@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisResult } from '../types/AnalysisResult';
 import { getMockAnalysisData } from './mockData';
 import { getGeminiApiKey } from './netlifyEnv';
+import { checkRateLimit, recordAnalysisRequest } from './rateLimiter';
 
 // Safe environment variable access with fallback
 const getApiKey = (): string => {
@@ -440,7 +441,9 @@ export async function analyzeLatin(
   options: { stream?: boolean, onStreamChunk?: (chunk: string) => void } = {}
 ): Promise<{
   result: AnalysisResult,
-  isMockData: boolean
+  isMockData: boolean,
+  rateLimited: boolean,
+  rateLimitInfo?: any
 }> {
   try {
     // Check if text is empty
@@ -448,7 +451,24 @@ export async function analyzeLatin(
       console.warn('Empty text provided, returning mock data');
       return {
         result: getMockAnalysisData(text || 'empty text', true),
-        isMockData: true
+        isMockData: true,
+        rateLimited: false
+      };
+    }
+
+    // Check client-side rate limit
+    const rateLimitCheck = checkRateLimit();
+    if (rateLimitCheck.isLimited) {
+      console.warn('Client-side rate limit exceeded');
+      return {
+        result: getMockAnalysisData(text, true),
+        isMockData: true,
+        rateLimited: true,
+        rateLimitInfo: {
+          remaining: rateLimitCheck.remainingRequests,
+          resetTime: rateLimitCheck.resetTime,
+          timeUntilReset: rateLimitCheck.timeUntilReset
+        }
       };
     }
 
@@ -458,7 +478,8 @@ export async function analyzeLatin(
       console.warn('No Gemini API key found, using mock data');
       return {
         result: getMockAnalysisData(text, true),
-        isMockData: true
+        isMockData: true,
+        rateLimited: false
       };
     }
 
@@ -544,7 +565,8 @@ Analyze this text (truncate to 800 chars if needed): "${textToAnalyze}"`;
     console.error('Error in direct Gemini API call:', error);
     return {
       result: getMockAnalysisData(text, true),
-      isMockData: true
+      isMockData: true,
+      rateLimited: false
     };
   }
 }
@@ -575,9 +597,14 @@ async function handleRegularRequest(model: any, prompt: string): Promise<{
         parsedResult = parseTextResponse(responseText);
       }
       
+      // Record the successful analysis request
+      recordAnalysisRequest();
+
       return {
         result: parsedResult,
-        isMockData: false
+        isMockData: false,
+        rateLimited: false,
+        rateLimitInfo: undefined
       };
     } finally {
       clearTimeout(timeoutId);
@@ -622,9 +649,14 @@ async function handleStreamingRequest(
         parsedResult = parseTextResponse(fullResponse);
       }
 
+      // Record the successful analysis request
+      recordAnalysisRequest();
+
       return {
         result: parsedResult,
-        isMockData: false
+        isMockData: false,
+        rateLimited: false,
+        rateLimitInfo: undefined
       };
     } catch (parseError) {
       console.error('Failed to parse streaming response:', parseError);
