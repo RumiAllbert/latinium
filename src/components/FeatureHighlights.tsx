@@ -4,29 +4,29 @@ export default function FeatureHighlights() {
   return (
     <div className="space-y-8">
       {/* Section Header */}
-      <div className="text-center space-y-4">
-        <h2 className="text-4xl font-bold text-white/95 hero-subtitle-shadow md:text-5xl">
+      <div className="text-center space-y-3 sm:space-y-4">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white/95 hero-subtitle-shadow">
           AI-Powered Latin Analysis
         </h2>
-        <p className="text-xl text-white/70 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-3xl mx-auto px-4">
           Experience the future of Latin learning with intelligent analysis,
           real-time insights, and interactive tutoring.
         </p>
       </div>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Main Feature - Grammar Analysis */}
         <div className="lg:col-span-2">
           <SpotlightCard
             className="h-full min-h-[300px] flex flex-col justify-center"
             spotlightColor="rgba(59, 130, 246, 0.2)"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-blue-400"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -39,11 +39,11 @@ export default function FeatureHighlights() {
                     ></path>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-white">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
                   Instant Grammar Analysis
                 </h3>
               </div>
-              <p className="text-white/80 text-lg leading-relaxed">
+              <p className="text-white/80 text-sm sm:text-base lg:text-lg leading-relaxed">
                 Get instant, detailed grammatical analysis of any Latin text.
                 Our AI identifies cases, tenses, moods, and syntactical
                 relationships in real-time.
@@ -66,14 +66,14 @@ export default function FeatureHighlights() {
         {/* Interactive Annotations */}
         <div>
           <SpotlightCard
-            className="h-full min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
             spotlightColor="rgba(147, 197, 253, 0.2)"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-purple-400"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -92,11 +92,11 @@ export default function FeatureHighlights() {
                     ></path>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-lg sm:text-xl font-semibold text-white">
                   Interactive Annotations
                 </h3>
               </div>
-              <p className="text-white/80">
+              <p className="text-white/80 text-sm sm:text-base">
                 Hover over any word to see instant analysis. Click to pin
                 annotations and build your understanding step by step.
               </p>
@@ -107,14 +107,14 @@ export default function FeatureHighlights() {
         {/* AI Tutoring */}
         <div>
           <SpotlightCard
-            className="h-full min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
             spotlightColor="rgba(34, 197, 94, 0.2)"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-green-400"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -127,11 +127,11 @@ export default function FeatureHighlights() {
                     ></path>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-lg sm:text-xl font-semibold text-white">
                   AI Tutoring
                 </h3>
               </div>
-              <p className="text-white/80">
+              <p className="text-white/80 text-sm sm:text-base">
                 Get personalized explanations and learning guidance tailored to
                 your level and progress.
               </p>
@@ -142,14 +142,14 @@ export default function FeatureHighlights() {
         {/* Translation & Context */}
         <div>
           <SpotlightCard
-            className="h-full min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
             spotlightColor="rgba(251, 191, 36, 0.2)"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-yellow-400"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -162,11 +162,11 @@ export default function FeatureHighlights() {
                     ></path>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-lg sm:text-xl font-semibold text-white">
                   Smart Translation
                 </h3>
               </div>
-              <p className="text-white/80">
+              <p className="text-white/80 text-sm sm:text-base">
                 Context-aware translations that preserve meaning and literary
                 nuance, not just word-for-word replacements.
               </p>
@@ -177,14 +177,14 @@ export default function FeatureHighlights() {
         {/* Progress Tracking */}
         <div className="lg:col-span-2">
           <SpotlightCard
-            className="h-full min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
             spotlightColor="rgba(168, 85, 247, 0.2)"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-purple-400"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -197,17 +197,19 @@ export default function FeatureHighlights() {
                     ></path>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-white">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
                   Learning Analytics
                 </h3>
               </div>
-              <p className="text-white/80 text-lg leading-relaxed">
+              <p className="text-white/80 text-sm sm:text-base lg:text-lg leading-relaxed">
                 Track your progress with detailed analytics. See which concepts
                 you've mastered and identify areas for improvement.
               </p>
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
                 <div className="space-y-2">
-                  <div className="text-sm text-white/60">Grammar Mastery</div>
+                  <div className="text-xs sm:text-sm text-white/60">
+                    Grammar Mastery
+                  </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
                     <div
                       className="bg-blue-400 h-2 rounded-full"
@@ -216,7 +218,9 @@ export default function FeatureHighlights() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-sm text-white/60">Vocabulary</div>
+                  <div className="text-xs sm:text-sm text-white/60">
+                    Vocabulary
+                  </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
                     <div
                       className="bg-green-400 h-2 rounded-full"

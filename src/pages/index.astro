@@ -52,22 +52,22 @@ import MainLayout from "../layouts/MainLayout.astro";
 
     <!-- Main content -->
     <div
-      class="relative z-10 max-w-6xl mx-auto px-6 text-center space-y-12 pt-24"
+      class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-8 sm:space-y-12 pt-16 sm:pt-24"
     >
       <!-- Professional hero content -->
-      <div class="mb-20">
+      <div class="mb-12 sm:mb-16 lg:mb-20">
         <div class="text-center space-y-8">
           <!-- Main headline with enhanced typography -->
           <div class="space-y-4">
             <ScrambleText
               client:load
               text="Latinium"
-              className="block font-serif text-7xl font-black md:text-9xl lg:text-[10rem] hero-text-shadow bg-gradient-to-br from-blue-200/90 via-blue-200/90 to-blue-100/90 bg-clip-text text-transparent"
+              className="block font-serif text-5xl font-black sm:text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] hero-text-shadow bg-gradient-to-br from-blue-200/90 via-blue-200/90 to-blue-100/90 bg-clip-text text-transparent"
               speed={60}
               delay={300}
             />
             <h2
-              class="text-2xl font-medium tracking-tight hero-subtitle-shadow md:text-3xl lg:text-4xl text-white/95 font-sans"
+              class="text-xl font-medium tracking-tight hero-subtitle-shadow sm:text-2xl md:text-3xl lg:text-4xl text-white/95 font-sans"
             >
               Latin, Reimagined
             </h2>
@@ -79,12 +79,12 @@ import MainLayout from "../layouts/MainLayout.astro";
           >
             <a
               href="/app"
-              class="group relative inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold text-white rounded-xl backdrop-blur-md border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-blue-500/20"
+              class="group relative inline-flex items-center justify-center gap-3 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-xl backdrop-blur-md border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-blue-500/20 min-h-[48px]"
               style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.05) 50%, rgba(219, 234, 254, 0.1) 100%);"
             >
               <span class="relative z-10">Launch Workspace</span>
               <ArrowRight
-                className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1"
                 client:load
               />
               <div
@@ -95,11 +95,11 @@ import MainLayout from "../layouts/MainLayout.astro";
             </a>
             <a
               href="#features"
-              class="inline-flex items-center gap-3 px-8 py-4 text-lg font-medium text-white/90 border-2 border-white/20 rounded-xl backdrop-blur-sm hover:bg-white/10 hover:border-white/40 transition-all duration-300"
+              class="inline-flex items-center justify-center gap-3 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-medium text-white/90 border-2 border-white/20 rounded-xl backdrop-blur-sm hover:bg-white/10 hover:border-white/40 transition-all duration-300 min-h-[48px]"
             >
               <span>Features</span>
               <svg
-                class="h-5 w-5"
+                class="h-4 w-4 sm:h-5 sm:w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -116,9 +116,9 @@ import MainLayout from "../layouts/MainLayout.astro";
       </div>
 
       <!-- Animated logo showcase with blur effect -->
-      <div class="mb-16">
+      <div class="mb-8 sm:mb-12 lg:mb-16">
         <GradualBlur client:load>
-          <div class="max-w-4xl mx-auto">
+          <div class="max-w-4xl mx-auto px-4">
             <LogoLoop client:load />
           </div>
         </GradualBlur>
@@ -127,7 +127,7 @@ import MainLayout from "../layouts/MainLayout.astro";
   </section>
 
   <!-- Feature Highlights Section with Threads Background -->
-  <section class="relative py-20" id="features">
+  <section class="relative py-12 sm:py-16 lg:py-20" id="features">
     <!-- Threads Background Effect -->
     <div class="absolute inset-0 pointer-events-none opacity-25 -z-10">
       <Threads
@@ -138,7 +138,9 @@ import MainLayout from "../layouts/MainLayout.astro";
         enableMouseInteraction={true}
       />
     </div>
-    <div class="max-w-6xl mx-auto px-6 space-y-16">
+    <div
+      class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 sm:space-y-12 lg:space-y-16"
+    >
       <FeatureHighlights client:load />
     </div>
   </section>

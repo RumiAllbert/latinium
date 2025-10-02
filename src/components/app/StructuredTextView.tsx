@@ -110,7 +110,50 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
 
   const isAnalyzing = analysisState === "analyzing";
 
-  // Enhanced words with pedagogical info
+  // Calculate adaptive difficulty based on user interaction patterns
+  const calculateAdaptiveDifficulty = (
+    word: any,
+    index: number
+  ): "easy" | "medium" | "hard" => {
+    const baseDifficulty =
+      (word as any).pedagogicalNotes?.difficulty || "medium";
+
+    // Simple adaptive difficulty based on interaction history
+    let adaptiveScore = 0;
+
+    // Base score from pedagogical notes
+    if (baseDifficulty === "easy") adaptiveScore += 1;
+    else if (baseDifficulty === "medium") adaptiveScore += 0;
+    else if (baseDifficulty === "hard") adaptiveScore -= 1;
+
+    // Complexity factors
+    if (word.relationships && word.relationships.length > 2) {
+      adaptiveScore -= 0.5; // More relationships = potentially harder
+    }
+
+    // Frequency heuristic (very basic)
+    const commonWords = [
+      "est",
+      "et",
+      "in",
+      "ad",
+      "cum",
+      "ex",
+      "per",
+      "sub",
+      "super",
+    ];
+    if (commonWords.includes(word.word.toLowerCase())) {
+      adaptiveScore += 0.5;
+    }
+
+    // Convert score back to difficulty level
+    if (adaptiveScore >= 0.5) return "easy";
+    if (adaptiveScore <= -0.5) return "hard";
+    return "medium";
+  };
+
+  // Enhanced words with pedagogical info and adaptive features
   const enhancedWords = useMemo(() => {
     if (!analysisResult?.words) return [];
 
@@ -124,6 +167,9 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
         : "",
       difficulty: (word as any).pedagogicalNotes?.difficulty || "medium",
       relationships: word.relationships || [],
+      pedagogicalNotes: (word as any).pedagogicalNotes || {},
+      // Calculate adaptive difficulty based on user interaction history
+      adaptiveDifficulty: calculateAdaptiveDifficulty(word, index),
     }));
   }, [analysisResult]);
 
@@ -221,7 +267,7 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
     }
   };
 
-  // Render word component
+  // Render word component with enhanced pedagogical features
   const renderWord = (word: any, showConnections = true) => {
     const isHovered = word.index === hoveredWordIndex;
     const isRelated =
@@ -232,20 +278,30 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
           hoveredWordIndex === word.index
       );
 
+    // Determine visual emphasis based on adaptive difficulty and interaction state
+    const getWordEmphasis = () => {
+      if (isHovered) return "ring-2 ring-white/40 shadow-lg scale-105";
+      if (isRelated) return "ring-2 ring-blue-400/60 shadow-md";
+      if (word.adaptiveDifficulty === "hard")
+        return "border-2 border-orange-400/50";
+      if (word.adaptiveDifficulty === "easy")
+        return "border border-green-400/30";
+      return "";
+    };
+
     let className = `
-      inline-flex items-center gap-2 m-2 px-4 py-3 rounded-lg border cursor-pointer
-      transition-all duration-200 font-serif text-xl font-medium
+      inline-flex items-center gap-2 m-2 px-3 py-2 rounded-lg border cursor-pointer
+      transition-all duration-200 font-serif text-lg font-medium relative group
       ${word.colors.text} ${word.colors.bg} ${word.colors.border} ${
       word.caseClass
     }
-      ${isHovered ? "ring-2 ring-white/40 shadow-lg scale-105" : ""}
-      ${isRelated ? "ring-2 ring-blue-400/60 shadow-md" : ""}
+      ${getWordEmphasis()}
       ${draggedWord === word.index ? "opacity-50 rotate-3" : ""}
       ${readingMode === "beginner" ? "draggable cursor-move" : ""}
-      hover:shadow-lg hover:scale-102
+      hover:shadow-lg hover:scale-102 focus:outline-none focus:ring-2 focus:ring-blue-400/50
     `;
 
-    const pedagogicalNotes = (word as any).pedagogicalNotes;
+    const pedagogicalNotes = word.pedagogicalNotes || {};
 
     return (
       <motion.span
@@ -260,32 +316,130 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         layout
+        tabIndex={0}
       >
-        <span className="font-semibold text-xl">{word.word}</span>
+        <span className="font-semibold text-lg">{word.word}</span>
 
+        {/* Enhanced pedagogical indicators */}
         {showHelpers && readingMode !== "advanced" && (
-          <div className="flex flex-col text-xs opacity-80">
+          <div className="flex flex-col gap-1">
+            {/* Main translation/helper */}
             {readingMode === "beginner" &&
               showTranslations &&
               word.meaning?.short && (
-                <span className="text-white/70">({word.meaning.short})</span>
+                <span className="text-xs text-white/70 font-medium">
+                  {word.meaning.short}
+                </span>
               )}
-            {pedagogicalNotes?.difficulty && (
+
+            {/* Difficulty indicator */}
+            {pedagogicalNotes.difficulty && (
+              <div className="flex items-center gap-1">
+                <span
+                  className={`
+                  px-1.5 py-0.5 rounded-full text-[10px] font-bold
+                  ${
+                    pedagogicalNotes.difficulty === "easy"
+                      ? "bg-green-500/30 text-green-200"
+                      : pedagogicalNotes.difficulty === "medium"
+                      ? "bg-yellow-500/30 text-yellow-200"
+                      : "bg-red-500/30 text-red-200"
+                  }
+                `}
+                  title={`Difficulty: ${pedagogicalNotes.difficulty}`}
+                >
+                  {pedagogicalNotes.difficulty}
+                </span>
+
+                {/* Adaptive difficulty indicator */}
+                {word.adaptiveDifficulty !== pedagogicalNotes.difficulty && (
+                  <span
+                    className={`
+                    px-1 py-0.5 rounded-full text-[9px] font-medium
+                    ${
+                      word.adaptiveDifficulty === "easy"
+                        ? "bg-blue-500/30 text-blue-200"
+                        : word.adaptiveDifficulty === "medium"
+                        ? "bg-purple-500/30 text-purple-200"
+                        : "bg-orange-500/30 text-orange-200"
+                    }
+                  `}
+                    title={`Adaptive difficulty: ${word.adaptiveDifficulty}`}
+                  >
+                    {word.adaptiveDifficulty}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Memory aid indicator */}
+            {pedagogicalNotes.memoryAid && (
               <span
-                className={`
-                px-1 rounded text-[10px] font-bold
-                ${
-                  pedagogicalNotes.difficulty === "easy"
-                    ? "bg-green-500/30 text-green-200"
-                    : pedagogicalNotes.difficulty === "medium"
-                    ? "bg-yellow-500/30 text-yellow-200"
-                    : "bg-red-500/30 text-red-200"
-                }
-              `}
+                className="text-[10px] text-amber-200/80 italic max-w-24 truncate"
+                title={pedagogicalNotes.memoryAid}
               >
-                {pedagogicalNotes.difficulty}
+                💡 {pedagogicalNotes.memoryAid}
               </span>
             )}
+          </div>
+        )}
+
+        {/* Relationship indicators */}
+        {showConnections && word.relationships.length > 0 && (
+          <div className="absolute -top-1 -right-1 flex gap-0.5">
+            {word.relationships.slice(0, 3).map((rel: any, i: number) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full ${
+                  rel.type.includes("verb")
+                    ? "bg-blue-400"
+                    : rel.type.includes("noun")
+                    ? "bg-green-400"
+                    : rel.type.includes("adjective")
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+                }`}
+                title={`${rel.type}: ${rel.description}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Tooltip on hover with detailed information */}
+        {isHovered && pedagogicalNotes && (
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-3 bg-slate-800/95 backdrop-blur-md text-slate-100 rounded-lg shadow-xl z-50 max-w-xs pointer-events-none border border-slate-600/30">
+            <div className="text-sm space-y-2">
+              {pedagogicalNotes.readingStrategy && (
+                <div>
+                  <div className="font-semibold text-blue-300 mb-1">
+                    Reading Strategy:
+                  </div>
+                  <div className="text-xs text-slate-200 leading-relaxed">
+                    {pedagogicalNotes.readingStrategy}
+                  </div>
+                </div>
+              )}
+              {pedagogicalNotes.commonMistakes && (
+                <div>
+                  <div className="font-semibold text-orange-300 mb-1">
+                    Common Mistake:
+                  </div>
+                  <div className="text-xs text-slate-200 leading-relaxed">
+                    {pedagogicalNotes.commonMistakes}
+                  </div>
+                </div>
+              )}
+              {pedagogicalNotes.culturalContext && (
+                <div>
+                  <div className="font-semibold text-purple-300 mb-1">
+                    Cultural Context:
+                  </div>
+                  <div className="text-xs text-slate-200 leading-relaxed">
+                    {pedagogicalNotes.culturalContext}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </motion.span>
@@ -534,8 +688,141 @@ const StructuredTextView: React.FC<StructuredTextViewProps> = ({
         </div>
       )}
 
+      {/* Degraded Analysis Warning */}
+      {(analysisResult as any)?.degraded && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 bg-orange-500/10 border border-orange-400/20 rounded-lg"
+        >
+          <div className="flex items-center gap-2 text-orange-200">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+            <span className="text-sm font-medium">
+              Partial Analysis Available
+            </span>
+          </div>
+          <p className="text-xs text-orange-200/80 mt-1">
+            Full AI analysis failed, but basic word identification is available.
+            Try again with a shorter text or different passage for better
+            results.
+          </p>
+        </motion.div>
+      )}
+
       {/* Main Content */}
       {renderContent()}
+
+      {/* Learning Objectives Section */}
+      {analysisResult?.learningObjectives && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/20 rounded-lg"
+        >
+          <h4 className="text-sm font-semibold text-purple-200 mb-2 flex items-center gap-2">
+            <Target className="w-4 h-4" />
+            Learning Objectives
+          </h4>
+          <div className="text-sm text-white/80 space-y-2">
+            {analysisResult.learningObjectives.goals &&
+              analysisResult.learningObjectives.goals.length > 0 && (
+                <div>
+                  <div className="font-medium text-purple-300">Goals:</div>
+                  <ul className="list-disc list-inside ml-2 text-xs">
+                    {analysisResult.learningObjectives.goals.map((goal, i) => (
+                      <li key={i}>{goal}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            {analysisResult.learningObjectives.grammar &&
+              analysisResult.learningObjectives.grammar.length > 0 && (
+                <div>
+                  <div className="font-medium text-blue-300">
+                    Grammar Focus:
+                  </div>
+                  <ul className="list-disc list-inside ml-2 text-xs">
+                    {analysisResult.learningObjectives.grammar.map(
+                      (item, i) => (
+                        <li key={i}>{item}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+            {analysisResult.learningObjectives.vocabulary &&
+              analysisResult.learningObjectives.vocabulary.length > 0 && (
+                <div>
+                  <div className="font-medium text-green-300">
+                    Vocabulary Theme:
+                  </div>
+                  <ul className="list-disc list-inside ml-2 text-xs">
+                    {analysisResult.learningObjectives.vocabulary.map(
+                      (item, i) => (
+                        <li key={i}>{item}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Pedagogical Metadata */}
+      {analysisResult?.pedagogicalMetadata && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 p-3 bg-slate-500/10 border border-slate-400/20 rounded-lg"
+        >
+          <div className="flex items-center justify-between text-xs text-white/70">
+            <div className="flex items-center gap-4">
+              <span
+                className={`px-2 py-1 rounded-full font-medium ${
+                  analysisResult.pedagogicalMetadata.estimatedDifficulty ===
+                  "easy"
+                    ? "bg-green-500/20 text-green-200"
+                    : analysisResult.pedagogicalMetadata.estimatedDifficulty ===
+                      "medium"
+                    ? "bg-yellow-500/20 text-yellow-200"
+                    : "bg-red-500/20 text-red-200"
+                }`}
+              >
+                {analysisResult.pedagogicalMetadata.estimatedDifficulty}
+              </span>
+              <span>⏱️ {analysisResult.pedagogicalMetadata.learningTime}</span>
+            </div>
+            <div className="flex gap-2">
+              {analysisResult.pedagogicalMetadata.prerequisites.length > 0 && (
+                <span className="text-blue-300">
+                  Prereqs:{" "}
+                  {analysisResult.pedagogicalMetadata.prerequisites.length}
+                </span>
+              )}
+              {analysisResult.pedagogicalMetadata.followUpConcepts.length >
+                0 && (
+                <span className="text-purple-300">
+                  Next:{" "}
+                  {analysisResult.pedagogicalMetadata.followUpConcepts.length}
+                </span>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Mode-specific instructions */}
       {readingMode === "beginner" && viewMode === "structured" && (

@@ -36,6 +36,15 @@ export interface RelatedWords {
   usageExamples: string[];
 }
 
+export interface PedagogicalNotes {
+  difficulty: 'easy' | 'medium' | 'hard';
+  memoryAid?: string;
+  commonMistakes?: string;
+  etymology?: string;
+  culturalContext?: string;
+  readingStrategy?: string;
+}
+
 export interface WordAnalysis {
   word: string;
   partOfSpeech: string;
@@ -44,6 +53,7 @@ export interface WordAnalysis {
   morphology: Morphology;
   relationships: Relationship[];
   relatedWords: RelatedWords;
+  pedagogicalNotes: PedagogicalNotes;
   position: {
     sentenceIndex: number;
     wordIndex: number;
@@ -54,11 +64,28 @@ export interface LatinSentence {
   original: string;
   translation?: string;
   structure?: string;
+  readingNotes?: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+}
+
+export interface LearningObjectives {
+  goals: string[];
+  grammar: string[];
+  vocabulary: string[];
+}
+
+export interface PedagogicalMetadata {
+  estimatedDifficulty: 'easy' | 'medium' | 'hard';
+  learningTime: string;
+  prerequisites: string[];
+  followUpConcepts: string[];
 }
 
 export interface LatinAnalysisResponse {
   words: WordAnalysis[];
   sentences?: LatinSentence[];
+  learningObjectives?: LearningObjectives;
+  pedagogicalMetadata?: PedagogicalMetadata;
 }
 
 export interface LatinAnalysisError {

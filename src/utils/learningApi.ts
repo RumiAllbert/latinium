@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AnalysisResult } from '../types/AnalysisResult';
-import type { TutorExplanation, QuizPayload } from '../types/Learning';
+import type { QuizPayload, TutorExplanation } from '../types/Learning';
 import { getGeminiApiKey } from './netlifyEnv';
 import { extractJsonFromText } from './textUtils';
 
@@ -15,7 +15,7 @@ export async function explainSentence(
   if (!key) return { result: mockTutor(sentence, analysis, level), isMockData: true };
 
   const genAI = new GoogleGenerativeAI(key);
-  const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash-lite', generationConfig: { temperature: 0.15, maxOutputTokens: 2048 } });
+  const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash', generationConfig: { temperature: 0.15, maxOutputTokens: 2048 } });
 
   const schema = `
   TutorExplanation = {
@@ -45,7 +45,7 @@ export async function generateQuiz(
   if (!key) return { result: mockQuiz(sentence, analysis), isMockData: true };
 
   const genAI = new GoogleGenerativeAI(key);
-  const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash-lite', generationConfig: { temperature: 0.2, maxOutputTokens: 2048 } });
+  const model = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash', generationConfig: { temperature: 0.2, maxOutputTokens: 2048 } });
 
   const schema = `
   QuizPayload = {

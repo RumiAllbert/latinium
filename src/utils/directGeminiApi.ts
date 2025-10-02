@@ -187,6 +187,14 @@ function normalizeToRich(input: any): AnalysisResult {
       morphology,
       relationships,
       relatedWords: w?.relatedWords ?? { synonyms: [], derivedForms: [], usageExamples: [] },
+      pedagogicalNotes: {
+        difficulty: w?.pedagogicalNotes?.difficulty ?? 'medium',
+        memoryAid: w?.pedagogicalNotes?.memoryAid ?? undefined,
+        commonMistakes: w?.pedagogicalNotes?.commonMistakes ?? undefined,
+        etymology: w?.pedagogicalNotes?.etymology ?? undefined,
+        culturalContext: w?.pedagogicalNotes?.culturalContext ?? undefined,
+        readingStrategy: w?.pedagogicalNotes?.readingStrategy ?? undefined
+      },
       position: w?.position ?? { sentenceIndex: 0, wordIndex: idx }
     };
   });
@@ -208,7 +216,7 @@ export async function generateQuiz(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.3,
         maxOutputTokens: 2048
@@ -290,7 +298,7 @@ export async function generateTutoring(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: 2048
@@ -379,7 +387,7 @@ export async function generateGraphData(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 2048
@@ -457,7 +465,7 @@ export async function analyzeLatin(
     // Initialize the Gemini API client (simplified approach)
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 4096
@@ -646,7 +654,7 @@ export async function generateProsodyAnalysis(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 2048
@@ -716,7 +724,7 @@ export async function generateVocabularyCards(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: 3072
@@ -798,7 +806,7 @@ export async function generateParsingExercises(text: string): Promise<{
   try {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.3,
         maxOutputTokens: 2048

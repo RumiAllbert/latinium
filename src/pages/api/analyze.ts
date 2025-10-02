@@ -3,9 +3,9 @@ import type { APIRoute } from 'astro';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type {
-    AnalyzeLatinRequest,
-    LatinAnalysisError,
-    LatinAnalysisResponse
+  AnalyzeLatinRequest,
+  LatinAnalysisError,
+  LatinAnalysisResponse
 } from '../../types/latin';
 import { latinCache } from '../../utils/cache';
 import { getGeminiApiKey } from '../../utils/env';
@@ -206,7 +206,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Initialize the Gemini API client with the newer model
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
-      model: "models/gemini-2.5-flash-lite",
+      model: "models/gemini-2.5-flash",
       // Add system instructions to guide the model's behavior
       systemInstruction: `You are Latinium, an expert Latin language analysis system that specializes in 
       detailed grammatical analysis of Latin texts. Your purpose is to provide accurate, 
@@ -276,24 +276,39 @@ export const POST: APIRoute = async ({ request }) => {
     Return: LatinAnalysis
     `;
     
-    // Create prompt for Latin text analysis with the improved schema
-    const prompt = `Analyze the following Latin text and provide a comprehensive grammatical breakdown following this schema:
+    // Concise pedagogical prompting strategy
+    const prompt = `You are a Latin pedagogy expert. Analyze this Latin text and return JSON with pedagogical insights.
 
-    ${schema}
-    
-    Important rules for analysis:
-    1. For each word, identify ALL grammatical relationships with other words
-    2. For verbs, identify subjects and objects with precise relationship descriptions
-    3. For adjectives, identify the nouns they modify
-    4. For prepositions, identify their objects
-    5. For relationships, use "direction": "from" when the word acts on another (e.g., verb → object) 
-       and "direction": "to" when it is acted upon (e.g., subject → verb)
-    6. Ensure bidirectional relationships are captured (e.g., if word A relates to word B, word B should also relate to word A)
-    7. Number words starting from 0 for each analysis type (wordIndex and relatedWordIndex)
-    8. Include position data for enabling UI visualization features
-    
-    Latin text to analyze: "${text}"
-    `;
+Schema:
+{
+  "words": [{
+    "word": "original",
+    "lemma": "dictionary form",
+    "partOfSpeech": "category",
+    "meaning": {"short": "brief", "detailed": "full explanation"},
+    "morphology": {"case": "nom|gen|dat|acc|abl|voc", "number": "sg|pl", "gender": "m|f|n", "person": "1|2|3", "tense": "pres|impf|fut|perf|plup|futperf", "mood": "ind|subj|imp|inf", "voice": "act|pass", "degree": "pos|comp|sup"},
+    "relationships": [{"type": "subject-verb|verb-object|adj-noun|prep-obj", "relatedWordIndex": 0, "description": "brief explanation", "direction": "from|to"}],
+    "pedagogicalNotes": {"difficulty": "easy|medium|hard", "memoryAid": "mnemonic", "commonMistakes": "errors to avoid", "etymology": "origin if useful", "culturalContext": "historical significance", "readingStrategy": "comprehension tip"},
+    "position": {"sentenceIndex": 0, "wordIndex": 0}
+  }],
+  "sentences": [{
+    "original": "Latin sentence",
+    "translation": "English version",
+    "structure": "grammatical analysis",
+    "readingNotes": "parsing guidance",
+    "difficulty": "easy|medium|hard"
+  }],
+  "learningObjectives": ["goal 1", "grammar focus", "vocabulary theme"],
+  "pedagogicalMetadata": {"estimatedDifficulty": "easy|medium|hard", "learningTime": "X minutes", "prerequisites": ["prior knowledge"], "followUpConcepts": ["next topics"]}
+}
+
+Guidelines:
+- Accurate grammar, complete analysis, educational value
+- Assess difficulty by complexity, frequency, syntax
+- Include memory aids, common mistakes, cultural context when relevant
+- Focus on teaching reading fluency
+
+Text: "${text}"`;
     
     console.log('Sending request to Gemini API...');
     
@@ -397,21 +412,28 @@ export const POST: APIRoute = async ({ request }) => {
         console.error('Raw response was:', responseText);
         console.error('Cleaned JSON was:', cleanedJson);
         
-        return new Response(
-          JSON.stringify({
-            error: 'Failed to parse analysis results',
-            details: parseError instanceof Error ? parseError.message : String(parseError),
-            rawResponse: cleanedJson.substring(0, 200) + '...', // Include partial raw response for debugging
-            fallback: true, // Indicator that client should use fallback
-            errorType: 'parsing_error'
-          } as LatinAnalysisError),
-          {
-            status: 422, // Unprocessable Entity - more specific than 500
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      // Enhanced fallback strategy with intelligent degradation
+      return new Response(
+        JSON.stringify({
+          error: 'Failed to parse analysis results',
+          details: parseError instanceof Error ? parseError.message : String(parseError),
+          rawResponse: cleanedJson.substring(0, 200) + '...',
+          fallback: true,
+          errorType: 'parsing_error',
+          suggestions: [
+            'Try with simpler Latin text (shorter sentences)',
+            'The AI may have generated malformed JSON - try again',
+            'Consider using a different Latin passage for better results'
+          ],
+          degradedAnalysis: createDegradedAnalysis(text) // Provide basic analysis as fallback
+        } as LatinAnalysisError),
+        {
+          status: 422,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       }
     } catch (apiError) {
       logDebugError('Gemini API Call', apiError);
@@ -511,10 +533,65 @@ function getErrorSuggestions(errorType: string): string[] {
 }
 
 /**
- * Extracts valid JSON from a text that might contain other formatting like markdown code blocks
- * @param text The text to extract JSON from
- * @returns Cleaned JSON string
+ * Creates a basic degraded analysis when full analysis fails
+ * Provides minimal but functional analysis for the UI
  */
+function createDegradedAnalysis(text: string): any {
+  const words = text.split(/\s+/).filter(word => word.length > 0);
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+  return {
+    words: words.map((word, index) => ({
+      word,
+      lemma: word.toLowerCase(),
+      partOfSpeech: guessPartOfSpeech(word),
+      meaning: {
+        short: `Latin word (${word})`,
+        detailed: `This is a degraded analysis fallback for "${word}". Full AI analysis failed.`
+      },
+      morphology: {},
+      relationships: [],
+      pedagogicalNotes: {
+        difficulty: "medium",
+        memoryAid: "Basic word identification",
+        commonMistakes: "Full analysis unavailable",
+        readingStrategy: "Focus on word recognition"
+      },
+      position: {
+        sentenceIndex: Math.floor(index / 10), // Rough estimate
+        wordIndex: index
+      }
+    })),
+    sentences: sentences.map((sentence, index) => ({
+      original: sentence.trim(),
+      translation: undefined,
+      structure: "Basic sentence structure",
+      readingNotes: "Degraded analysis - full details unavailable",
+      difficulty: "medium"
+    })),
+    degraded: true,
+    warning: "This is a fallback analysis. Full AI analysis failed."
+  };
+}
+
+/**
+ * Simple heuristic to guess part of speech from word form
+ */
+function guessPartOfSpeech(word: string): string {
+  const w = word.toLowerCase();
+
+  // Common Latin endings
+  if (w.endsWith('t') && w.length > 2) return 'verb';
+  if (w.endsWith('us') || w.endsWith('um') || w.endsWith('a') || w.endsWith('ae')) return 'noun';
+  if (w.endsWith('is') || w.endsWith('ibus') || w.endsWith('es')) return 'noun';
+  if (w.endsWith('em') || w.endsWith('am')) return 'noun';
+  if (w.endsWith('i') && w.length > 2) return 'noun';
+  if (w.endsWith('e')) return 'adverb';
+  if (w.endsWith('er')) return 'adjective';
+
+  return 'unknown';
+}
+
 function extractJsonFromText(text: string): string {
   // Check if the text is already valid JSON
   try {
@@ -524,40 +601,40 @@ function extractJsonFromText(text: string): string {
     // Not valid JSON, try to extract it
     console.log('Response is not valid JSON, attempting to extract...');
   }
-  
+
   // If the response is wrapped in markdown code blocks ```json ... ```, extract just the JSON part
   const jsonCodeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/;
   const match = text.match(jsonCodeBlockRegex);
-  
+
   if (match && match[1]) {
     console.log('Found JSON in code block');
     return match[1].trim();
   }
-  
+
   // If no code block, try to find anything that looks like JSON (starts with { and ends with })
   const jsonObjectRegex = /(\{[\s\S]*\})/;
   const objectMatch = text.match(jsonObjectRegex);
-  
+
   if (objectMatch && objectMatch[1]) {
     console.log('Found JSON object pattern');
     return objectMatch[1].trim();
   }
-  
+
   // If we still can't find valid JSON, remove backticks and any non-JSON text
   // First, strip all backticks
   console.log('Attempting to clean and extract JSON with more aggressive methods');
   let cleaned = text.replace(/`/g, '');
-  
+
   // Try to find the start of a JSON object
   const startIndex = cleaned.indexOf('{');
   const endIndex = cleaned.lastIndexOf('}');
-  
+
   if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
     console.log(`Found JSON boundaries from index ${startIndex} to ${endIndex}`);
     cleaned = cleaned.substring(startIndex, endIndex + 1);
     return cleaned;
   }
-  
+
   // If all else fails, return the original text and let the JSON parser throw an error
   // This will help with debugging
   console.warn('Could not extract valid JSON from the response');
