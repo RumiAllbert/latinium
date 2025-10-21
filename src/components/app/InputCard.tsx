@@ -88,17 +88,27 @@ const InputCard = () => {
   };
 
   return (
-    <div className="relative">
-      <div className="glass-card p-6 sm:p-8">
+    <motion.div
+      className="relative"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="glass-frosted p-6 sm:p-8 hover-lift glass-glow">
         {isAnalyzing && <LightRayLoader />}
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold font-serif text-slate-900 dark:text-white">
-            Input Text
+          <h2 className="text-lg font-semibold font-serif text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="text-gradient-animate">Input Text</span>
           </h2>
-          <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60">
+          <motion.div
+            className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <Wand2 className="h-4 w-4" />
             <span>Paste text or select a sample</span>
-          </div>
+          </motion.div>
         </div>
 
         {/* Rate Limit Status */}
@@ -159,18 +169,23 @@ const InputCard = () => {
         )}
 
         <div className="flex flex-wrap gap-2 mb-4">
-          {samples.map((s) => (
-            <button
+          {samples.map((s, idx) => (
+            <motion.button
               key={s.label}
-              className="px-4 py-2 text-sm rounded-lg backdrop-blur-sm bg-white/10 hover:bg-white/20 border border-white/20 text-white hover:text-white transition-all duration-200 font-medium dark:bg-slate-800/80 dark:border-slate-700/50 dark:text-slate-200"
+              className="px-4 py-2 text-sm rounded-lg backdrop-blur-sm bg-white/10 hover:bg-white/20 border border-white/20 text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-white transition-all duration-200 font-medium dark:bg-slate-800/80 dark:border-slate-700/50 btn-interactive hover:scale-105 hover:shadow-lg"
               onClick={() => setText(s.text)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 * idx, duration: 0.3 }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
               {s.label}
-            </button>
+            </motion.button>
           ))}
         </div>
 
-        <textarea
+        <motion.textarea
           className={`w-full h-64 p-4 sm:p-6 rounded-xl font-serif text-lg leading-relaxed focus:outline-none border transition-all duration-300 glass-input resize-none
           ${
             text.length > CHAR_LIMIT
@@ -182,6 +197,9 @@ const InputCard = () => {
           placeholder="Paste or select sample text..."
           value={text}
           onChange={(e) => setText(e.target.value)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
         />
         <div className="flex justify-between items-center mt-4">
           <span
@@ -193,14 +211,14 @@ const InputCard = () => {
           >
             {text.length}/{CHAR_LIMIT} chars
           </span>
-          <button
-            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg ${
+          <motion.button
+            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg relative overflow-hidden ${
               text.length === 0 ||
               text.length > CHAR_LIMIT ||
               isAnalyzing ||
               rateLimitInfo.isLimited
                 ? "glass-button opacity-50"
-                : "glass-button-primary hover:scale-105"
+                : "glass-button-primary hover:scale-105 pulse-glow"
             }`}
             onClick={handleAnalyze}
             disabled={
@@ -214,6 +232,8 @@ const InputCard = () => {
                 ? `Rate limited. Resets in ${rateLimitInfo.timeUntilReset}`
                 : undefined
             }
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {isAnalyzing ? (
               <>
@@ -221,12 +241,27 @@ const InputCard = () => {
                 <span>Analyzing...</span>
               </>
             ) : (
-              "Analyze"
+              <>
+                <span className="relative z-10">Analyze</span>
+                <svg
+                  className="w-4 h-4 relative z-10"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </>
             )}
-          </button>
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

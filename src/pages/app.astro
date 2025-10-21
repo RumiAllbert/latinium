@@ -9,12 +9,75 @@ import MainLayout from "../layouts/MainLayout.astro";
   description="Interactive Latin analysis workspace with sentence-by-sentence exploration, tutoring, and quizzes."
 >
   <div
-    class="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+    class="flex flex-col min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
     style={{ color: "var(--fg)" }}
   >
+    <!-- Animated background layers -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+      <!-- Grid pattern overlay -->
+      <div class="absolute inset-0 grid-pattern opacity-30"></div>
+
+      <!-- Animated gradient blobs -->
+      <div
+        class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary-500/20 to-secondary-500/20 rounded-full blur-3xl blob"
+        style="animation-delay: 0s;"
+      >
+      </div>
+      <div
+        class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-secondary-500/20 to-primary-500/20 rounded-full blur-3xl blob"
+        style="animation-delay: 2s;"
+      >
+      </div>
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-accent-primary/10 to-accent-secondary/10 rounded-full blur-3xl blob"
+        style="animation-delay: 4s;"
+      >
+      </div>
+
+      <!-- Floating particles -->
+      <div class="particle-bg">
+        <div
+          class="particle"
+          style="left: 10%; animation-delay: 0s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 20%; animation-delay: 2s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 30%; animation-delay: 4s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 40%; animation-delay: 1s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 50%; animation-delay: 3s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 60%; animation-delay: 5s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 70%; animation-delay: 2.5s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 80%; animation-delay: 4.5s;"
+        ></div>
+        <div
+          class="particle"
+          style="left: 90%; animation-delay: 1.5s;"
+        ></div>
+      </div>
+    </div>
+
     <TopBar client:load />
 
-    <main class="flex-1 pt-16">
+    <main class="flex-1 pt-16 relative z-10">
       <Workspace client:load />
     </main>
   </div>
@@ -34,4 +97,12 @@ import MainLayout from "../layouts/MainLayout.astro";
       // The React component will handle the auto-analysis
     }
   </script>
+
+  <style>
+    /* CSS variables for blob colors */
+    :root {
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+    }
+  </style>
 </MainLayout>
