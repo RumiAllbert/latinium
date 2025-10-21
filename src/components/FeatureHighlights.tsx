@@ -1,25 +1,64 @@
+import { motion } from "framer-motion";
 import SpotlightCard from "./SpotlightCard";
 
 export default function FeatureHighlights() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.4, 0, 0.2, 1],
+      },
+    },
+  };
+
   return (
     <div className="space-y-8">
       {/* Section Header */}
-      <div className="text-center space-y-3 sm:space-y-4">
+      <motion.div
+        className="text-center space-y-3 sm:space-y-4"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white/95 hero-subtitle-shadow">
-          AI-Powered Latin Analysis
+          <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            AI-Powered Latin Analysis
+          </span>
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-3xl mx-auto px-4">
           Experience the future of Latin learning with intelligent analysis,
           real-time insights, and interactive tutoring.
         </p>
-      </div>
+      </motion.div>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+      >
         {/* Main Feature - Grammar Analysis */}
-        <div className="lg:col-span-2">
+        <motion.div className="lg:col-span-2" variants={itemVariants}>
           <SpotlightCard
-            className="h-full min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[300px] flex flex-col justify-center hover-lift card-tilt glass-glow"
             spotlightColor="rgba(59, 130, 246, 0.2)"
           >
             <div className="space-y-3 sm:space-y-4">
@@ -49,24 +88,36 @@ export default function FeatureHighlights() {
                 relationships in real-time.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                <motion.span
+                  className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm border border-blue-400/20"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Noun Cases
-                </span>
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                </motion.span>
+                <motion.span
+                  className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm border border-blue-400/20"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Verb Tenses
-                </span>
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                </motion.span>
+                <motion.span
+                  className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm border border-blue-400/20"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Syntax
-                </span>
+                </motion.span>
               </div>
             </div>
           </SpotlightCard>
-        </div>
+        </motion.div>
 
         {/* Interactive Annotations */}
-        <div>
+        <motion.div variants={itemVariants}>
           <SpotlightCard
-            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center hover-lift card-tilt glass-glow"
             spotlightColor="rgba(147, 197, 253, 0.2)"
           >
             <div className="space-y-3 sm:space-y-4">
@@ -102,12 +153,12 @@ export default function FeatureHighlights() {
               </p>
             </div>
           </SpotlightCard>
-        </div>
+        </motion.div>
 
         {/* AI Tutoring */}
-        <div>
+        <motion.div variants={itemVariants}>
           <SpotlightCard
-            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center hover-lift card-tilt glass-glow"
             spotlightColor="rgba(34, 197, 94, 0.2)"
           >
             <div className="space-y-3 sm:space-y-4">
@@ -137,12 +188,12 @@ export default function FeatureHighlights() {
               </p>
             </div>
           </SpotlightCard>
-        </div>
+        </motion.div>
 
         {/* Translation & Context */}
-        <div>
+        <motion.div variants={itemVariants}>
           <SpotlightCard
-            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center hover-lift card-tilt glass-glow"
             spotlightColor="rgba(251, 191, 36, 0.2)"
           >
             <div className="space-y-3 sm:space-y-4">
@@ -172,12 +223,12 @@ export default function FeatureHighlights() {
               </p>
             </div>
           </SpotlightCard>
-        </div>
+        </motion.div>
 
         {/* Progress Tracking */}
-        <div className="lg:col-span-2">
+        <motion.div className="lg:col-span-2" variants={itemVariants}>
           <SpotlightCard
-            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center"
+            className="h-full min-h-[280px] sm:min-h-[300px] flex flex-col justify-center hover-lift card-tilt glass-glow"
             spotlightColor="rgba(168, 85, 247, 0.2)"
           >
             <div className="space-y-3 sm:space-y-4">
@@ -231,8 +282,8 @@ export default function FeatureHighlights() {
               </div>
             </div>
           </SpotlightCard>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
