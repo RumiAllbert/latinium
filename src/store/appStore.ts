@@ -1,14 +1,6 @@
 import { create } from 'zustand';
 import type { AnalysisResult } from '../types/AnalysisResult';
-import {
-    analyzeLatin,
-    generateGraphData,
-    generateParsingExercises,
-    generateProsodyAnalysis,
-    generateQuiz,
-    generateTutoring,
-    generateVocabularyCards
-} from '../utils/directGeminiApi';
+import { apiAnalyzeLatin, apiGraph, apiParsing, apiProsody, apiQuiz, apiTutor, apiVocab } from '../utils/apiClient';
 import { SpacedRepetitionManager, type ReviewResult, type StudyCard } from '../utils/spacedRepetition';
 import { storage, type StoredText, type StoredVocabularyCard, type StudySession, type UserProfile } from '../utils/storage';
 
@@ -212,33 +204,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       currentText: text
     });
 
-    const apiKey = import.meta.env.PUBLIC_GEMINI_API_KEY;
-    if (!apiKey) {
-      const errorMessage = "Gemini API key is not configured. Please set PUBLIC_GEMINI_API_KEY in your environment.";
-      console.error(errorMessage);
-      set({ error: errorMessage, analysisState: 'error' });
-      return;
-    }
-
     try {
-      const { result, isMockData, rateLimited } = await analyzeLatin(text);
-
-      if (rateLimited) {
-        const rateLimitMessage = 'Rate limit exceeded. Please wait for the reset timer or try again later.';
-        console.warn(rateLimitMessage);
-        set({
-          error: rateLimitMessage,
-          analysisState: 'error',
-          rateLimitError: true
-        });
-        return;
-      }
-
-      if (isMockData) {
-        console.warn("Displaying mock data as a fallback.");
-      }
-      console.log('Setting analysis result:', { result, wordCount: result.words?.length, isMockData });
-      console.log('First few words:', result.words?.slice(0, 3));
+      const result = await apiAnalyzeLatin(text);
       set({ analysisResult: result, analysisState: 'success', rateLimitError: false });
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
@@ -315,7 +282,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ quizState: 'loading', quizData: null });
 
     try {
-      const quizData = await generateQuiz(currentText);
+      const quizData = await apiQuiz(currentText);
       set({ quizData, quizState: 'loaded' });
     } catch (error) {
       console.error('Error generating quiz:', error);
@@ -330,7 +297,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ tutoringState: 'loading', tutoringData: null });
 
     try {
-      const tutoringData = await generateTutoring(currentText);
+      const tutoringData = await apiTutor(currentText, 'basic');
       set({ tutoringData, tutoringState: 'loaded' });
     } catch (error) {
       console.error('Error generating tutoring content:', error);
@@ -345,7 +312,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ graphState: 'loading', graphData: null });
 
     try {
-      const graphData = await generateGraphData(currentText);
+      const graphData = await apiGraph(currentText);
       set({ graphData, graphState: 'loaded' });
     } catch (error) {
       console.error('Error generating graph data:', error);
@@ -360,7 +327,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ prosodyState: 'loading', prosodyData: null });
 
     try {
-      const prosodyData = await generateProsodyAnalysis(currentText);
+      const prosodyData = await apiProsody(currentText);
       set({ prosodyData, prosodyState: 'loaded' });
     } catch (error) {
       console.error('Error generating prosody analysis:', error);
@@ -375,7 +342,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ vocabularyState: 'loading', vocabularyData: null });
 
     try {
-      const vocabularyData = await generateVocabularyCards(currentText);
+      const vocabularyData = await apiVocab(currentText);
       set({ vocabularyData, vocabularyState: 'loaded' });
     } catch (error) {
       console.error('Error generating vocabulary cards:', error);
@@ -390,7 +357,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ parsingState: 'loading', parsingData: null });
 
     try {
-      const parsingData = await generateParsingExercises(currentText);
+      const parsingData = await apiParsing(currentText);
       set({ parsingData, parsingState: 'loaded' });
     } catch (error) {
       console.error('Error generating parsing exercises:', error);
