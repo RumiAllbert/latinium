@@ -1,35 +1,26 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { extractJsonFromText } from './json';
 
-export type GeminiModelName = 'gemini-2.5-flash' | 'gemini-2.5-pro';
+export const MODEL = 'gemini-3.1-flash-lite-preview';
 
-export function getServerGeminiApiKey(): string {
-  // Server-side only. Do NOT rely on PUBLIC_ vars.
-  const key = process.env.GEMINI_API_KEY ?? '';
-  return key.trim();
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error('Missing GEMINI_API_KEY (server env)');
 }
 
-export function getGeminiModel(params?: {
-  model?: GeminiModelName;
-  systemInstruction?: string;
-  temperature?: number;
-  maxOutputTokens?: number;
-}) {
-  const apiKey = getServerGeminiApiKey();
-  if (!apiKey) {
-    throw new Error('Missing GEMINI_API_KEY (server env).');
-  }
+const genAI = new GoogleGenerativeAI(apiKey);
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const modelName = params?.model ?? 'gemini-2.5-flash';
+const model = genAI.getGenerativeModel({
+  model: MODEL,
+  generationConfig: {
+    temperature: 0.2,
+    maxOutputTokens: 4096,
+  },
+});
 
-  return genAI.getGenerativeModel({
-    model: modelName,
-    systemInstruction: params?.systemInstruction,
-    generationConfig: {
-      temperature: params?.temperature ?? 0.2,
-      maxOutputTokens: params?.maxOutputTokens ?? 4096
-    }
-  });
+export async function callGemini(prompt: string): Promise<unknown> {
+  const res = await model.generateContent(prompt);
+  const raw = res.response.text();
+  const json = extractJsonFromText(raw);
+  return JSON.parse(json);
 }
-
-
