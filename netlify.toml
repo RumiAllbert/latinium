@@ -1,24 +1,10 @@
 [build]
-command = "npm run build"
-publish = "dist"
-
-# Simple fallback for SPA routing
-[[redirects]]
-from = "/graph"
-to = "/graph/index.html"
-status = 200
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
+  command = "npm run build"
+  publish = "dist"
 
 [build.environment]
-# Ensure we're using Node.js 18 or higher (required for modern JavaScript features)
-NODE_VERSION = "18"
-# Explicitly make sure environment variables are processed during build
-NETLIFY_USE_CREDENTIALS = "true"
+  NODE_VERSION = "18.20.4"
 
 [dev]
-framework = "astro"
-targetPort = 4321
+  framework = "astro"
+  targetPort = 4321
