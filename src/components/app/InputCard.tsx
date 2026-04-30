@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, Clock, Wand2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAppStore } from "../../store/appStore";
-import { getRateLimitStatus } from "../../utils/rateLimiter";
 
 const CHAR_LIMIT = 800;
 
@@ -69,18 +68,31 @@ const LightRayLoader = () => {
 
 const InputCard = () => {
   const [text, setText] = useState(samples[0].text);
-  const [rateLimitInfo, setRateLimitInfo] = useState(getRateLimitStatus());
   const { analysisState, analyzeText, rateLimitError } = useAppStore();
   const isAnalyzing = analysisState === "analyzing";
 
-  // Update rate limit status periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRateLimitInfo(getRateLimitStatus());
-    }, 1000); // Update every second
-
-    return () => clearInterval(interval);
-  }, []);
+  const rateLimit = useAppStore((s) => s.rateLimit);
+  const rateLimitInfo = (() => {
+    if (!rateLimit) {
+      return {
+        remaining: 15,
+        isLimited: false,
+        timeUntilReset: '—',
+        percentage: 100,
+      };
+    }
+    const msLeft = Math.max(0, rateLimit.resetAt - Date.now());
+    const minutes = Math.ceil(msLeft / 60_000);
+    return {
+      remaining: rateLimit.remaining,
+      isLimited: rateLimit.remaining <= 0,
+      timeUntilReset:
+        minutes > 60
+          ? `${Math.floor(minutes / 60)}h ${minutes % 60}m`
+          : `${minutes}m`,
+      percentage: Math.round((rateLimit.remaining / rateLimit.limit) * 100),
+    };
+  })();
 
   const handleAnalyze = () => {
     console.log("Analyze button clicked. Sending text to store:", text);
