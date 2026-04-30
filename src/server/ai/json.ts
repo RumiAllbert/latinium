@@ -1,6 +1,6 @@
 /**
- * Extract and parse JSON from model output.
- * Models sometimes wrap JSON in code fences or add surrounding text.
+ * Extract a JSON substring from model output. Models sometimes wrap
+ * JSON in code fences or surrounding prose.
  */
 export function extractJsonFromText(text: string): string {
   const trimmed = text.trim();
@@ -16,10 +16,3 @@ export function extractJsonFromText(text: string): string {
 
   throw new Error('Model did not return JSON.');
 }
-
-export function parseModelJson<T>(text: string): T {
-  const jsonText = extractJsonFromText(text);
-  return JSON.parse(jsonText) as T;
-}
-
-
