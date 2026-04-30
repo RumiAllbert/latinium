@@ -1,6 +1,6 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 // Example text collection
 const examples = [
@@ -55,7 +55,7 @@ const examples = [
   title="Latinium.ai - Latin Text Examples"
   description="Explore famous Latin text examples with Latinium.ai's Latin analysis tools"
 >
-  <ViewTransitions />
+  <ClientRouter />
 
   <div class="max-w-4xl mx-auto py-12">
     <h1 class="text-3xl font-serif text-white mb-8">Latin Text Examples</h1>
