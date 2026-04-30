@@ -1,132 +1,102 @@
 # 🏛️ Latinium: Learn Latin Interactively
 
-> **Bring ancient Latin to life with modern visualization and AI analysis!**
+> **Bring ancient Latin to life with modern visualization and AI analysis.**
 
-Latinium is a learning-first web app for reading Latin. Paste text, lock it, hover sentences for instant breakdowns, then pin a sentence to get a guided Tutor walkthrough, an auto‑generated Quiz, and build your own Vocab deck. Powered by Google’s Gemini.
+Latinium is a learning-first web app for reading Latin. Paste text, hover sentences for instant breakdowns, then dig into a guided Tutor walkthrough, an auto-generated Quiz, and a personal Vocab deck. Powered by Google's Gemini.
 
 [Latinium In Action](https://latinium.rumiallbert.com/)
 
 ## ✨ Key Features
 
-- 🔒 Lock & Hover analysis: fast sentence‑level breakdowns with animated auras
+- 🔒 Hover analysis: fast sentence-level breakdowns with relationship cues
 - 📌 Pin a sentence: open Tutor (guided steps) and Quiz (MCQs) for that line
-- 🗂️ Vocab deck: save words and meanings to a local deck
-- 🎨 Case-based coloring and relationship cues for clarity
-- 🌓 Light mode by default with a theme toggle
-- ⚡ Direct Gemini client using `models/gemini-2.5-flash` with structured output
+- 🗂️ Vocab deck: save words and meanings to a deck with spaced repetition
+- 🎨 Case-based coloring for instant grammatical recognition
+- 🔗 Shareable analysis links — copy a `/a/<hash>` URL and a friend can explore it without an account
+- ⚡ Server-side Gemini calls with content-addressed caching and IP rate limiting
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- 📦 **Node.js v18.14.1 or higher** (critical requirement)
-- 🔑 **Google Gemini API key** ([Get one here](https://ai.google.dev/))
+- 📦 Node.js v18.14.1+
+- 🔑 Google Gemini API key ([get one](https://ai.google.dev/))
+- 🗄️ Supabase project (free tier is fine) — for the cache and rate-limit tables
+- 🌐 Netlify account — the project ships as Astro SSR with the `@astrojs/netlify` adapter
 
-### Quick Setup
+### Setup
 
-1. **Clone & Install**
+1. **Clone & install**
    ```bash
    git clone https://github.com/yourusername/latinium.git
    cd latinium
-   npm install
+   npm install --legacy-peer-deps
    ```
 
-2. **Set up your API key**
-   Create a `.env` file in the project root:
+2. **Provision Supabase tables**
+
+   Apply the migrations in `supabase/migrations/` to your Supabase project (via the Supabase CLI or the dashboard SQL editor).
+
+3. **Configure `.env.local`**
+
+   Copy `.env.example` to `.env.local` and fill in:
    ```
-   GEMINI_API_KEY=your_api_key_here
+   GEMINI_API_KEY=...
+   SUPABASE_URL=https://<project-ref>.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=...           # Server only — never expose to client
+   SUPABASE_ANON_KEY=...                   # Reserved for Tier 2
+   APP_SECRET=<openssl rand -hex 32>       # Salt for IP hashing
    ```
 
-3. **Start developing**
+4. **Run locally**
    ```bash
    npm run dev
    ```
-   Then visit `http://localhost:4321` in your browser! 🎉
+   Then visit http://localhost:4321.
 
-## 🔧 Working with Latinium
+## 🏗️ Architecture
 
-### Using the Workspace
+- **Astro SSR** on Netlify (`output: 'server'`, `@astrojs/netlify` adapter).
+- **One AI route path** — `src/pages/api/ai/{analyze,quiz,tutor,vocab,graph,prosody,parsing}.ts`. Each is a five-line wrapper around `createAiHandler`, which handles request hashing, cache lookup, IP rate limiting, Gemini call, response validation, and cache write.
+- **Supabase Postgres** stores the `analyses` cache (content-addressed by `endpoint + text_hash + model`) and the `rate_limits` log.
+- **Rate limit:** 15 AI calls per IP per 3-hour sliding window. Cache hits don't count.
+- **Share URLs:** `/a/<hash>` is an SSR page that reads the cached analysis straight from Postgres. No sign-in required to view a shared link.
 
-1. Paste text → click “Lock & Analyze”
-2. Hover sentences to analyze; click a sentence to pin it
-3. Use Tutor/Quiz/Vocab (right panel) for learning workflow
-
-### Case-Based Coloring 🎨
-
-Words are now colored based on their grammatical case to make Latin easier to understand:
-
-- **Nominative (subject)**: 🟦 Blue
-- **Accusative (direct object)**: 🟨 Amber
-- **Genitive (possession)**: 🟪 Purple
-- **Dative (indirect object)**: 🟩 Green
-- **Ablative (by/with/from)**: 🟫 Pink
-- **Vocative (direct address)**: 🟦 Indigo
-- **Verbs**: 🟥 Always colored red
-
-This visualization helps you instantly recognize grammatical patterns and understand how words relate to each other in Latin sentences.
-
-### Tutor & Quiz
-
-- Tutor builds small steps: find verb, subject, objects, modifiers, then translate
-- Quiz generates 3–5 questions (identify subject, tense, case usage, agreement, etc.)
-
-### Word Filtering
-
-- Filter by part of speech to focus on specific word types
-- Toggle relationship types to highlight specific grammatical connections
-- Use the "Focus Mode" to concentrate on one relationship at a time
+The Gemini key never leaves the server. The browser only ever talks to `/api/ai/*`.
 
 ## 📁 Project Structure
 
 ```
 latinium
-├── src/                # Source code
-│   ├── components/     # Reusable UI components
-│   │   ├── ui/         # Basic UI components
-│   │   └── ...         # Feature-specific components
-│   ├── layouts/        # Page layouts
-│   ├── pages/          # Astro pages (file-based routing)
-│   │   └── index.astro # Homepage
-│   ├── styles/         # Global styles
-│   ├── utils/          # Utility functions
-│   │   ├── directGeminiApi.ts # Direct client-side API integration
-│   │   ├── mockData.ts # Fallback data when API is unavailable
-│   │   └── textUtils.ts # Text processing utilities
-│   └── types/          # TypeScript type definitions
-└── public/             # Static assets
+├── src/
+│   ├── components/         # React UI (workspace, learning panels)
+│   ├── layouts/            # Astro layouts
+│   ├── pages/              # Astro pages + API routes
+│   │   ├── a/              #   shareable analysis URLs
+│   │   └── api/ai/         #   the seven AI endpoints
+│   ├── server/             # Server-only modules (Supabase, cache, rate-limit, Gemini)
+│   │   └── ai/             #   handler factory, hash, schemas, prompts, gemini wrapper
+│   ├── store/              # Zustand client store
+│   ├── styles/             # Global CSS
+│   ├── utils/              # Browser utilities
+│   └── types/              # TypeScript types
+├── supabase/migrations/    # Postgres schema + RLS
+└── public/                 # Static assets
 ```
 
-## 🛠️ Technical Notes
+## 📝 Deployment
 
-- **Current Output Mode**: Static site generation (`output: 'static'`)
-- **API Implementation**: Uses direct client-side API integration with Google's Gemini API
-- **Node.js Requirement**: This project requires v18.14.1+ (critical)
-- **Fallback System**: Gracefully falls back to mock data when API is unavailable
+The repo deploys cleanly on Netlify:
 
-## 📝 Deployment Options
-
-### Netlify Deployment (Recommended)
-
-1. Fork/Clone this repository
-2. Connect to Netlify
-3. Configure the environment variable:
-   - `PUBLIC_GEMINI_API_KEY`: Your Google Gemini API key
-4. Deploy! The build will automatically include your API key in the client-side code
-
-### Using the API Locally
-
-For local development with full API functionality:
-
-1. Ensure you have Node.js v18.14.1+ installed
-2. Configure your `.env` file with your Gemini API key as `PUBLIC_GEMINI_API_KEY`
-3. Run in development mode: `npm run dev`
+1. Connect the repo in the Netlify dashboard.
+2. Set the same environment variables you have in `.env.local` (Site settings → Environment variables).
+3. Push to `main` (or open a PR for a deploy preview).
 
 ## 🔮 Future Enhancements
 
+- 🔐 User accounts (anonymous Supabase auth) and cross-device vocab/progress sync
 - 📱 Mobile-optimized interface
-- 🌍 Support for additional languages
-- 📖 Integration with classical Latin texts library
-- 📚 Educational exercises based on analysis results
+- 🌍 Greek/Sanskrit support once the Latin loop is sticky
 
 ## 📜 License
 
