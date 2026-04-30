@@ -13,7 +13,13 @@ import StructuredTextView from "./StructuredTextView";
 import TutorPanel from "./TutorPanel";
 import VocabDeck from "./VocabDeck";
 
-const Workspace = () => {
+interface WorkspaceProps {
+  seedAnalysis?: unknown;
+  seedHash?: string;
+  seedText?: string;
+}
+
+const Workspace = ({ seedAnalysis, seedHash, seedText }: WorkspaceProps = {}) => {
   const {
     analysisState,
     error,
@@ -39,6 +45,19 @@ const Workspace = () => {
       analyzeText(currentText);
     }
   }, [currentText, analysisState, analyzeText]);
+
+  // Seed the store from SSR-provided shared analysis (e.g. /a/<hash> page)
+  useEffect(() => {
+    if (!seedAnalysis || !seedHash || !seedText) return;
+    useAppStore.setState({
+      analysisResult: seedAnalysis as any,
+      analysisState: 'success',
+      currentText: seedText,
+      lastAnalysisHash: seedHash,
+      error: null,
+      rateLimitError: false,
+    });
+  }, [seedAnalysis, seedHash, seedText]);
 
   // Contextual tooltip state
   const {

@@ -1,0 +1,49 @@
+---
+import { getCached } from '../../server/cache';
+import { MODEL } from '../../server/ai/gemini';
+import TopBar from '../../components/app/TopBar.tsx';
+import Workspace from '../../components/app/Workspace.tsx';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+const { hash } = Astro.params;
+
+let seedAnalysis: unknown = null;
+let seedText = '';
+
+if (hash && /^[a-f0-9]{64}$/.test(hash)) {
+  const cached = (await getCached('analyze', hash, MODEL)) as
+    | { words?: unknown[]; sentences?: { original?: string; text?: string }[] }
+    | null;
+  seedAnalysis = cached;
+  if (cached?.sentences?.length) {
+    seedText = cached.sentences
+      .map((s) => s.original ?? s.text ?? '')
+      .filter(Boolean)
+      .join(' ');
+  }
+}
+
+if (!seedAnalysis) {
+  return Astro.redirect(`/app?notFound=${hash ?? ''}`);
+}
+---
+
+<MainLayout
+  title="Latinium.ai – Shared Analysis"
+  description="A shared Latin analysis on Latinium."
+>
+  <div
+    class="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+    style={{ color: 'var(--fg)' }}
+  >
+    <TopBar client:load />
+    <main class="flex-1 pt-16">
+      <Workspace
+        client:load
+        seedAnalysis={seedAnalysis}
+        seedHash={hash}
+        seedText={seedText}
+      />
+    </main>
+  </div>
+</MainLayout>
