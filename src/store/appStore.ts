@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { AnalysisResult } from '../types/AnalysisResult';
 import { apiAnalyzeLatin, apiGraph, apiParsing, apiProsody, apiQuiz, apiTutor, apiVocab } from '../utils/apiClient';
+import type { RateLimitState } from '../utils/apiClient';
 import { SpacedRepetitionManager, type ReviewResult, type StudyCard } from '../utils/spacedRepetition';
 import { storage, type StoredText, type StoredVocabularyCard, type StudySession, type UserProfile } from '../utils/storage';
 
@@ -116,6 +117,9 @@ interface AppState {
 
   currentText: string;
 
+  lastAnalysisHash: string | null;
+  rateLimit: RateLimitState | null;
+
   // Storage-related state
   storedVocabularyCards: StoredVocabularyCard[];
   storedTexts: StoredText[];
@@ -184,6 +188,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   parsingData: null,
   parsingState: 'idle',
   currentText: '',
+  lastAnalysisHash: null,
+  rateLimit: null,
 
   // Storage-related state
   storedVocabularyCards: [],
@@ -201,16 +207,29 @@ export const useAppStore = create<AppState>((set, get) => ({
       analysisResult: null,
       hoveredWordIndex: null,
       inspectedWordIndex: null,
-      currentText: text
+      currentText: text,
+      lastAnalysisHash: null,
     });
 
     try {
-      const result = await apiAnalyzeLatin(text);
-      set({ analysisResult: result, analysisState: 'success', rateLimitError: false });
+      const res = await apiAnalyzeLatin(text);
+      set({
+        analysisResult: res.data,
+        analysisState: 'success',
+        rateLimitError: false,
+        lastAnalysisHash: res.hash,
+        rateLimit: res.rateLimit,
+      });
     } catch (e) {
+      const isRateLimit =
+        e instanceof Error && (e as any).code === 'rate_limited';
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
       console.error("Analysis failed:", errorMessage);
-      set({ error: errorMessage, analysisState: 'error', rateLimitError: false });
+      set({
+        error: errorMessage,
+        analysisState: 'error',
+        rateLimitError: !!isRateLimit,
+      });
     }
   },
 
@@ -260,6 +279,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       hoveredWordIndex: null,
       inspectedWordIndex: null,
       currentText: '',
+      lastAnalysisHash: null,
       quizData: null,
       quizState: 'idle',
       tutoringData: null,
@@ -282,8 +302,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ quizState: 'loading', quizData: null });
 
     try {
-      const quizData = await apiQuiz(currentText);
-      set({ quizData, quizState: 'loaded' });
+      const res = await apiQuiz(currentText);
+      set({ quizData: res.data, quizState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating quiz:', error);
       set({ quizState: 'error' });
@@ -297,8 +317,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ tutoringState: 'loading', tutoringData: null });
 
     try {
-      const tutoringData = await apiTutor(currentText, 'basic');
-      set({ tutoringData, tutoringState: 'loaded' });
+      const res = await apiTutor(currentText, 'basic');
+      set({ tutoringData: res.data, tutoringState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating tutoring content:', error);
       set({ tutoringState: 'error' });
@@ -312,8 +332,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ graphState: 'loading', graphData: null });
 
     try {
-      const graphData = await apiGraph(currentText);
-      set({ graphData, graphState: 'loaded' });
+      const res = await apiGraph(currentText);
+      set({ graphData: res.data, graphState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating graph data:', error);
       set({ graphState: 'error' });
@@ -327,8 +347,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ prosodyState: 'loading', prosodyData: null });
 
     try {
-      const prosodyData = await apiProsody(currentText);
-      set({ prosodyData, prosodyState: 'loaded' });
+      const res = await apiProsody(currentText);
+      set({ prosodyData: res.data, prosodyState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating prosody analysis:', error);
       set({ prosodyState: 'error' });
@@ -342,8 +362,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ vocabularyState: 'loading', vocabularyData: null });
 
     try {
-      const vocabularyData = await apiVocab(currentText);
-      set({ vocabularyData, vocabularyState: 'loaded' });
+      const res = await apiVocab(currentText);
+      set({ vocabularyData: res.data, vocabularyState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating vocabulary cards:', error);
       set({ vocabularyState: 'error' });
@@ -357,8 +377,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ parsingState: 'loading', parsingData: null });
 
     try {
-      const parsingData = await apiParsing(currentText);
-      set({ parsingData, parsingState: 'loaded' });
+      const res = await apiParsing(currentText);
+      set({ parsingData: res.data, parsingState: 'loaded', rateLimit: res.rateLimit });
     } catch (error) {
       console.error('Error generating parsing exercises:', error);
       set({ parsingState: 'error' });
