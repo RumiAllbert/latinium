@@ -21,6 +21,7 @@ const Workspace = () => {
     loadStoredData,
     currentText,
     analyzeText,
+    lastAnalysisHash,
   } = useAppStore();
   const [useEnhancedView, setUseEnhancedView] = useState(true);
 
@@ -92,6 +93,21 @@ const Workspace = () => {
                 Enhanced View
               </button>
             </div>
+          </div>
+        )}
+
+        {showAnalysis && analysisState === 'success' && lastAnalysisHash && (
+          <div className="flex items-center justify-center">
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/a/${lastAnalysisHash}`;
+                void navigator.clipboard.writeText(url);
+              }}
+              className="px-5 py-2.5 text-sm font-medium rounded-lg glass-button text-white"
+              title="Copy a shareable link to this analysis"
+            >
+              Copy share link
+            </button>
           </div>
         )}
 
