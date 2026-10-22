@@ -14,8 +14,8 @@ to = "/index.html"
 status = 200
 
 [build.environment]
-# Ensure we're using Node.js 18 or higher (required for modern JavaScript features)
-NODE_VERSION = "18"
+# Node 18/20 are EOL and do not receive CVE-2026-111497. Use 22.x.
+NODE_VERSION = "22"
 # Explicitly make sure environment variables are processed during build
 NETLIFY_USE_CREDENTIALS = "true"
 
